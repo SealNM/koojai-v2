@@ -77,7 +77,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             <div className="w-10 h-10 bg-gradient-to-tr from-primary to-blue-400 rounded-xl flex items-center justify-center shadow-lg">
               <Sparkles className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-xl font-bold tracking-tight text-foreground">KooJai</h1>
+            <h1 className="text-xl font-bold tracking-tight text-foreground font-kanit">KooJai</h1>
             
             {/* Mobile Close Button */}
             <button 
@@ -95,7 +95,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                 key={item.id}
                 onClick={() => handleNavigate(item.id)}
                 className={cn(
-                  "w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-200 group relative overflow-hidden",
+                  "w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-200 group relative overflow-hidden font-kanit",
                   isActive(item.id) 
                     ? "bg-primary text-primary-foreground shadow-md shadow-primary/25 font-semibold" 
                     : "text-muted-foreground hover:bg-secondary hover:text-foreground"
@@ -109,23 +109,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
           {/* Footer / User Profile */}
           <div className="flex-none p-4 m-4 bg-secondary/50 rounded-3xl border border-border/50">
-             <div className="flex items-center gap-3 mb-4 cursor-pointer" onClick={() => router.push('/profile')}>
-                <Avatar name={user?.name || 'User'} className="w-10 h-10 border-2 border-background" />
+             <div className="flex items-center gap-3 mb-4 cursor-pointer hover:bg-white/50 dark:hover:bg-black/20 p-2 rounded-xl transition-colors" onClick={() => router.push('/profile')}>
+                <Avatar name={user?.name || 'User'} className="w-10 h-10 border-2 border-background shadow-sm" />
                 <div className="min-w-0 flex-1">
-                    <p className="font-bold text-sm text-foreground truncate">{user?.name || 'Guest'}</p>
+                    <p className="font-bold text-sm text-foreground truncate font-kanit">{user?.name || 'Guest'}</p>
                     <p className="text-xs text-muted-foreground truncate opacity-80">Online</p>
                 </div>
              </div>
              
-             <div className="flex items-center justify-between gap-2">
-                <ThemeToggle className="bg-background/80 hover:bg-background rounded-xl w-full h-10" />
+             {/* Redesigned Actions Area */}
+             <div className="flex items-center gap-2">
+                <div className="flex-1">
+                    <ThemeToggle variant="switch" />
+                </div>
                 <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="w-10 h-10 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive hover:text-white p-0"
+                    variant="danger" 
+                    size="sm"
+                    className="h-10 w-10 p-0 rounded-xl shadow-sm"
                     onClick={logout}
+                    title="Logout"
                 >
-                    <LogOut className="w-5 h-5" />
+                    <LogOut className="w-4 h-4" />
                 </Button>
              </div>
           </div>

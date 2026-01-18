@@ -48,7 +48,8 @@ export default function HomePage() {
   return (
     <AppLayout>
       <div className="flex-1 overflow-y-auto overflow-x-hidden bg-background p-4 md:p-8">
-        <div className="max-w-6xl mx-auto space-y-8 pb-10">
+        {/* Increased max-width for better large screen experience */}
+        <div className="max-w-7xl mx-auto space-y-8 pb-10">
             {/* Header */}
             <motion.div 
                 initial={{ opacity: 0, y: -20 }}
@@ -56,17 +57,17 @@ export default function HomePage() {
                 className="flex flex-col md:flex-row md:items-end justify-between gap-4"
             >
                 <div>
-                   <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2 flex items-center gap-2">
+                   <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2 flex items-center gap-2 font-kanit">
                     <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600">
-                        สวัสดี, {user?.name || 'เพื่อน'}!
+                        สวัสดี, {user?.nickname || user?.first_name || 'เพื่อน'}!
                     </span> 
                     👋
                    </h1>
-                   <p className="text-muted-foreground text-lg">
+                   <p className="text-muted-foreground text-lg font-kanit">
                     วันนี้อยากคุยกับใครดี?
                    </p>
                 </div>
-                <Button onClick={() => router.push('/characters/create')} leftIcon={<Plus className="w-5 h-5"/>} className="shadow-lg shadow-primary/20">
+                <Button onClick={() => router.push('/characters/create')} leftIcon={<Plus className="w-5 h-5"/>} className="shadow-lg shadow-primary/20 font-kanit">
                     สร้างเพื่อนใหม่
                 </Button>
             </motion.div>
@@ -90,10 +91,10 @@ export default function HomePage() {
                             </div>
                             <div className="flex-1 space-y-3">
                                 <div className="flex items-center gap-3">
-                                    <h2 className="text-2xl font-bold text-foreground">KooJai (คู่ใจ)</h2>
+                                    <h2 className="text-2xl font-bold text-foreground font-kanit">KooJai (คู่ใจ)</h2>
                                     <Badge variant="primary" className="text-xs">Official AI</Badge>
                                 </div>
-                                <p className="text-foreground/80 leading-relaxed text-lg">
+                                <p className="text-foreground/80 leading-relaxed text-lg font-kanit">
                                     เพื่อนคู่ใจที่พร้อมรับฟังทุกเรื่องของคุณ ไม่ว่าจะสุขหรือทุกข์ เราอยู่ตรงนี้เสมอ
                                 </p>
                                 <div className="flex flex-wrap gap-3 pt-2">
@@ -101,6 +102,7 @@ export default function HomePage() {
                                         variant="primary" 
                                         onClick={() => router.push('/characters/koojai/chat')} 
                                         leftIcon={<MessageCircle className="w-5 h-5"/>}
+                                        className="font-kanit"
                                     >
                                         คุยเลย
                                     </Button>
@@ -108,6 +110,7 @@ export default function HomePage() {
                                         variant="secondary" 
                                         onClick={() => router.push('/characters/koojai/chat?mode=voice')} 
                                         leftIcon={<Mic className="w-5 h-5"/>}
+                                        className="font-kanit"
                                     >
                                         คุยเสียง
                                     </Button>
@@ -130,14 +133,14 @@ export default function HomePage() {
                             <div className="w-20 h-20 rounded-full bg-secondary group-hover:bg-primary/10 flex items-center justify-center transition-colors shadow-sm">
                                 <Plus className="w-8 h-8" />
                             </div>
-                            <span className="font-medium text-lg">สร้างตัวละครแรกของคุณ</span>
+                            <span className="font-medium text-lg font-kanit">สร้างตัวละครแรกของคุณ</span>
                         </button>
                    ) : (
                         <Card className="h-full flex flex-col items-center justify-center p-8 bg-secondary/20 border-dashed border-2 border-border hover:border-primary/50 cursor-pointer group transition-colors" onClick={() => router.push('/characters/create')}>
                             <div className="w-16 h-16 rounded-full bg-background flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
                                 <Plus className="w-8 h-8 text-primary" />
                             </div>
-                             <h3 className="font-bold text-lg text-foreground">สร้างเพื่อนใหม่</h3>
+                             <h3 className="font-bold text-lg text-foreground font-kanit">สร้างเพื่อนใหม่</h3>
                         </Card>
                    )}
                 </motion.div>
@@ -148,28 +151,23 @@ export default function HomePage() {
                         <Card className="h-full flex flex-col hover:border-primary/50 hover:shadow-xl transition-all cursor-pointer group bg-card hover:-translate-y-1 duration-300" onClick={() => router.push(`/characters/${char.id}/chat`)}>
                             <div className="p-6 flex-1 flex flex-col items-center text-center gap-4">
                                 <div className="relative">
-                                     <div className="text-4xl w-24 h-24 bg-gradient-to-br from-secondary to-background rounded-full flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform border-4 border-background">
-                                        {char.avatar}
-                                     </div>
-                                     <div className="absolute bottom-0 right-0 w-6 h-6 bg-green-500 border-4 border-background rounded-full"></div>
+                                    <Avatar name={char.name} src={char.avatar} className="w-20 h-20 text-3xl shadow-md ring-4 ring-secondary group-hover:ring-primary/20 transition-all" />
+                                    <div className="absolute bottom-0 right-0 w-5 h-5 bg-green-500 rounded-full border-2 border-card" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-xl text-foreground group-hover:text-primary transition-colors">{char.name}</h3>
-                                    <Badge variant="default" className="mt-2 text-[10px] opacity-70">{char.personality || 'Friendly'}</Badge>
+                                    <h3 className="text-xl font-bold text-foreground mb-1 font-kanit">{char.name}</h3>
+                                    <p className="text-sm text-muted-foreground line-clamp-2">{char.description || 'ไม่มีคำอธิบาย'}</p>
                                 </div>
-                                <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-                                    {char.description || "พร้อมคุยกับคุณทุกเรื่อง"}
-                                </p>
                             </div>
-                            <div className="p-4 border-t border-border/50 bg-secondary/30 mt-auto">
-                                <Button variant="ghost" fullWidth size="sm" className="text-primary hover:bg-white hover:text-primary dark:hover:bg-primary/20">
-                                    ทักทายเลย
+                            <div className="p-4 border-t border-border bg-secondary/30 flex justify-between items-center">
+                                <Badge variant="default" className="text-xs">AI Friend</Badge>
+                                <Button size="sm" variant="ghost" className="text-primary hover:text-primary hover:bg-primary/10 -mr-2">
+                                    ทักทาย
                                 </Button>
                             </div>
                         </Card>
                     </motion.div>
                 ))}
-
             </motion.div>
         </div>
       </div>
