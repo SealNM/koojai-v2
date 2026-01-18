@@ -27,9 +27,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
         </div>
       )}
 
-      {/* Mobile Sidebar (controlled by state) */}
+      {/* Mobile Sidebar (controlled by state) - Hide on desktop to avoid duplication */}
       {showSidebar && (
-         <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+        <div className="md:hidden">
+            <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+        </div>
       )}
 
       {/* Main Content Area */}
