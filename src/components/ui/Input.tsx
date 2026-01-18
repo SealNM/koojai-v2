@@ -1,226 +1,116 @@
 'use client';
 
-import { forwardRef, InputHTMLAttributes, TextareaHTMLAttributes, useState } from 'react';
-import { EyeIcon, EyeOffIcon, SearchIcon } from './Icons';
+import React, { forwardRef } from 'react';
 
-/**
- * 🎨 Input Components
- * Base input components สำหรับใช้ทั่วทั้งแอป
- */
-
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
-  error?: string;
-  hint?: string;
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
+  error?: string;
+  label?: string;
 }
 
-const Input = forwardRef<HTMLInputElement, InputProps>(
-  (
-    {
-      label,
-      error,
-      hint,
-      leftIcon,
-      rightIcon,
-      className = '',
-      type = 'text',
-      ...props
-    },
-    ref
-  ) => {
-    const [showPassword, setShowPassword] = useState(false);
-    const isPassword = type === 'password';
-    const inputType = isPassword ? (showPassword ? 'text' : 'password') : type;
-
-    return (
-      <div className="w-full">
-        {label && (
-          <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
-            {label}
-          </label>
-        )}
-        <div className="relative">
+export const Input = forwardRef<HTMLInputElement, InputProps>(({
+  leftIcon,
+  rightIcon,
+  error,
+  label,
+  className = '',
+  ...props
+}, ref) => {
+  return (
+    <div className="w-full">
+      {label && (
+        <label className="block text-sm font-medium text-slate-600 dark:text-brand-gray mb-2">
+          {label}
+        </label>
+      )}
+      <div className={`
+        bg-white dark:bg-brand-surface 
+        border ${error ? 'border-red-500' : 'border-slate-200 dark:border-white/10'} 
+        rounded-2xl p-1 
+        focus-within:border-brand-purple 
+        transition-colors 
+        shadow-sm
+      `}>
+        <div className="flex items-center px-4">
           {leftIcon && (
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">
+            <span className="text-slate-400 dark:text-brand-gray mr-3 shrink-0">
               {leftIcon}
-            </div>
+            </span>
           )}
           <input
             ref={ref}
-            type={inputType}
             className={`
-              w-full px-4 py-3.5
-              bg-white dark:bg-slate-800/50 
-              border-2 border-slate-200 dark:border-slate-700/50
-              rounded-xl
-              text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500
-              transition-all duration-200
-              focus:outline-none focus:border-blue-500/50 focus:bg-white dark:focus:bg-slate-800
-              focus:ring-2 focus:ring-blue-500/20
-              disabled:opacity-50 disabled:cursor-not-allowed
-              ${leftIcon ? 'pl-12' : ''}
-              ${rightIcon || isPassword ? 'pr-12' : ''}
-              ${error ? 'border-red-500/50 focus:border-red-500/50 focus:ring-red-500/20' : ''}
+              w-full bg-transparent py-3 
+              text-slate-900 dark:text-white 
+              placeholder:text-slate-400 dark:placeholder:text-brand-gray/50 
+              focus:outline-none font-medium
               ${className}
             `}
             {...props}
           />
-          {isPassword && (
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
-            >
-              {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-            </button>
-          )}
-          {rightIcon && !isPassword && (
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">
+          {rightIcon && (
+            <span className="text-slate-400 dark:text-brand-gray ml-3 shrink-0">
               {rightIcon}
-            </div>
+            </span>
           )}
         </div>
-        {hint && !error && (
-          <p className="mt-2 text-sm text-slate-500">{hint}</p>
-        )}
-        {error && (
-          <p className="mt-2 text-sm text-red-500 dark:text-red-400">{error}</p>
-        )}
       </div>
-    );
-  }
-);
+      {error && (
+        <p className="mt-1 text-sm text-red-500">{error}</p>
+      )}
+    </div>
+  );
+});
 
 Input.displayName = 'Input';
 
-// Named export
-export { Input };
-export default Input;
-
-// Search Input
-interface SearchInputProps extends InputHTMLAttributes<HTMLInputElement> {
-  onSearch?: (value: string) => void;
-}
-
-export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
-  ({ className = '', onSearch, ...props }, ref) => {
-    return (
-      <div className="relative">
-        <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-slate-500" />
-        <input
-          ref={ref}
-          type="search"
-          className={`
-            w-full pl-12 pr-4 py-3
-            bg-white dark:bg-slate-800/50 
-            border-2 border-slate-200 dark:border-slate-700/50
-            rounded-xl
-            text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500
-            transition-all duration-200
-            focus:outline-none focus:border-blue-500/50 focus:bg-white dark:focus:bg-slate-800
-            ${className}
-          `}
-          {...props}
-        />
-      </div>
-    );
-  }
-);
-
-SearchInput.displayName = 'SearchInput';
-
-// Textarea
-interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
-  label?: string;
+// Textarea variant
+interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   error?: string;
-  hint?: string;
+  label?: string;
 }
 
-export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  (
-    {
-      label,
-      error,
-      hint,
-      className = '',
-      ...props
-    },
-    ref
-  ) => {
-    return (
-      <div className="w-full">
-        {label && (
-          <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
-            {label}
-          </label>
-        )}
+export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
+  error,
+  label,
+  className = '',
+  ...props
+}, ref) => {
+  return (
+    <div className="w-full">
+      {label && (
+        <label className="block text-sm font-medium text-slate-600 dark:text-brand-gray mb-2">
+          {label}
+        </label>
+      )}
+      <div className={`
+        bg-white dark:bg-brand-surface 
+        border ${error ? 'border-red-500' : 'border-slate-200 dark:border-white/10'} 
+        rounded-2xl 
+        focus-within:border-brand-purple 
+        transition-colors 
+        shadow-sm
+      `}>
         <textarea
           ref={ref}
           className={`
-            w-full px-4 py-3.5
-            bg-white dark:bg-slate-800/50 
-            border-2 border-slate-200 dark:border-slate-700/50
-            rounded-xl
-            text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500
-            transition-all duration-200
-            focus:outline-none focus:border-blue-500/50 focus:bg-white dark:focus:bg-slate-800
-            focus:ring-2 focus:ring-blue-500/20
-            disabled:opacity-50 disabled:cursor-not-allowed
-            resize-none
-            ${error ? 'border-red-500/50 focus:border-red-500/50 focus:ring-red-500/20' : ''}
+            w-full bg-transparent p-4
+            text-slate-900 dark:text-white 
+            placeholder:text-slate-400 dark:placeholder:text-brand-gray/50 
+            focus:outline-none font-medium resize-none
             ${className}
           `}
           {...props}
         />
-        {hint && !error && (
-          <p className="mt-2 text-sm text-slate-500">{hint}</p>
-        )}
-        {error && (
-          <p className="mt-2 text-sm text-red-500 dark:text-red-400">{error}</p>
-        )}
       </div>
-    );
-  }
-);
+      {error && (
+        <p className="mt-1 text-sm text-red-500">{error}</p>
+      )}
+    </div>
+  );
+});
 
 Textarea.displayName = 'Textarea';
 
-// Chat Input (special styling for chat interface)
-interface ChatInputProps extends InputHTMLAttributes<HTMLInputElement> {
-  onSend?: () => void;
-  isSending?: boolean;
-}
-
-export const ChatInput = forwardRef<HTMLInputElement, ChatInputProps>(
-  ({ className = '', onSend, isSending, ...props }, ref) => {
-    return (
-      <div className="relative flex items-center gap-3">
-        <input
-          ref={ref}
-          type="text"
-          className={`
-            flex-1 px-5 py-4
-            bg-white dark:bg-slate-800/80 
-            border-2 border-slate-200 dark:border-slate-700/50
-            rounded-2xl
-            text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500
-            transition-all duration-200
-            focus:outline-none focus:border-blue-500/50 focus:bg-white dark:focus:bg-slate-800
-            ${className}
-          `}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey && onSend) {
-              e.preventDefault();
-              onSend();
-            }
-          }}
-          {...props}
-        />
-      </div>
-    );
-  }
-);
-
-ChatInput.displayName = 'ChatInput';
+export default Input;

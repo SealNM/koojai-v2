@@ -61,25 +61,25 @@ function TeacherLoginForm() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center p-6 bg-slate-50 relative overflow-hidden">
+    <div className="min-h-screen w-full flex items-center justify-center p-6 bg-slate-50 dark:bg-brand-dark relative overflow-hidden">
       {/* Background decorations */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-100 rounded-full opacity-30 blur-3xl translate-x-1/2 -translate-y-1/2"></div>
-      <div className="absolute bottom-0 left-0 w-80 h-80 bg-emerald-100 rounded-full opacity-30 blur-3xl -translate-x-1/3 translate-y-1/3"></div>
+      <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-100 dark:bg-emerald-900/30 rounded-full opacity-30 blur-3xl translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute bottom-0 left-0 w-80 h-80 bg-emerald-100 dark:bg-emerald-900/30 rounded-full opacity-30 blur-3xl -translate-x-1/3 translate-y-1/3"></div>
 
-      <div className="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-md text-center relative z-10 border border-slate-100">
+      <div className="bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-2xl w-full max-w-md text-center relative z-10 border border-slate-100 dark:border-slate-700">
         {/* Logo */}
         <div className="mb-6 flex justify-center">
-          <div className="w-28 h-28 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg shadow-emerald-200 p-5">
+          <div className="w-28 h-28 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg shadow-emerald-200 dark:shadow-emerald-900/30 p-5">
             <TeacherIcon />
           </div>
         </div>
 
-        <h1 className="text-3xl font-bold text-slate-800 mb-2">Teacher Portal</h1>
-        <p className="text-slate-500 mb-8 font-light">ระบบสำหรับคุณครูและผู้ดูแล</p>
+        <h1 className="text-3xl font-bold text-slate-800 dark:text-white mb-2">Teacher Portal</h1>
+        <p className="text-slate-500 dark:text-slate-400 mb-8 font-light">ระบบสำหรับคุณครูและผู้ดูแล</p>
 
         {/* Error Message */}
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">
+          <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 rounded-xl text-sm">
             {error}
           </div>
         )}
@@ -87,13 +87,13 @@ function TeacherLoginForm() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Email */}
           <div className="text-left">
-            <label className="block text-sm font-medium text-slate-600 mb-1.5 ml-1">
+            <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1.5 ml-1">
               อีเมล
             </label>
             <input
               type="email"
               placeholder="teacher@school.ac.th"
-              className="w-full px-5 py-4 bg-slate-50 rounded-2xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:outline-none transition-all text-lg placeholder-slate-400"
+              className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 focus:border-emerald-400 dark:focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:focus:ring-emerald-900/50 focus:outline-none transition-all text-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -103,14 +103,14 @@ function TeacherLoginForm() {
 
           {/* Password */}
           <div className="text-left">
-            <label className="block text-sm font-medium text-slate-600 mb-1.5 ml-1">
+            <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1.5 ml-1">
               รหัสผ่าน
             </label>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
                 placeholder="รหัสผ่าน"
-                className="w-full px-5 py-4 bg-slate-50 rounded-2xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:outline-none transition-all text-lg placeholder-slate-400 pr-12"
+                className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 focus:border-emerald-400 dark:focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:focus:ring-emerald-900/50 focus:outline-none transition-all text-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 pr-12"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -119,7 +119,7 @@ function TeacherLoginForm() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
               >
                 {showPassword ? <EyeOffIcon /> : <EyeIcon />}
               </button>
@@ -130,8 +130,8 @@ function TeacherLoginForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full text-white text-lg font-semibold py-4 rounded-2xl transition duration-200 shadow-xl shadow-emerald-100
-              ${isLoading ? 'bg-emerald-300 cursor-not-allowed' : 'bg-emerald-500 hover:bg-emerald-600 active:scale-[0.98]'}`}
+            className={`w-full text-white text-lg font-semibold py-4 rounded-2xl transition duration-200 shadow-xl shadow-emerald-100 dark:shadow-emerald-900/30
+              ${isLoading ? 'bg-emerald-300 dark:bg-emerald-800 cursor-not-allowed' : 'bg-emerald-500 hover:bg-emerald-600 active:scale-[0.98]'}`}
           >
             {isLoading ? (
               <span className="flex items-center justify-center space-x-2">
@@ -148,10 +148,10 @@ function TeacherLoginForm() {
         </form>
 
         {/* Student Login Link */}
-        <div className="mt-6 pt-6 border-t border-slate-100">
+        <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-700">
           <Link
             href="/login"
-            className="text-sm text-slate-400 hover:text-emerald-500 transition"
+            className="text-sm text-slate-400 dark:text-slate-500 hover:text-emerald-500 dark:hover:text-emerald-400 transition"
           >
             ← กลับไปหน้า Login นักเรียน
           </Link>

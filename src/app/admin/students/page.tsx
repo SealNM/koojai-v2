@@ -236,41 +236,41 @@ function StudentManagementContent() {
     if (!isOpen) return null;
 
     return (
-      <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-          <div className="p-6 border-b border-slate-100">
-            <h3 className="text-xl font-bold text-slate-800">{title}</h3>
+      <div className="fixed inset-0 bg-black/30 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700">
+          <div className="p-6 border-b border-slate-100 dark:border-slate-700">
+            <h3 className="text-xl font-bold text-slate-800 dark:text-white">{title}</h3>
           </div>
           <div className="p-6 space-y-4">
             {!isEdit && (
               <>
                 <div>
-                  <label className="block text-sm font-medium text-slate-600 mb-1">รหัสนักเรียน *</label>
+                  <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">รหัสนักเรียน *</label>
                   <input
                     type="text"
                     value={formData.student_id}
                     onChange={e => setFormData({...formData, student_id: e.target.value})}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-400 dark:focus:border-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
                     placeholder="เช่น 65010001"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-600 mb-1">อีเมล *</label>
+                  <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">อีเมล *</label>
                   <input
                     type="email"
                     value={formData.email}
                     onChange={e => setFormData({...formData, email: e.target.value})}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-400 dark:focus:border-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
                     placeholder="student@school.ac.th"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-600 mb-1">รหัสผ่าน *</label>
+                  <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">รหัสผ่าน *</label>
                   <input
                     type="password"
                     value={formData.password}
                     onChange={e => setFormData({...formData, password: e.target.value})}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-400 dark:focus:border-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
                     placeholder="••••••"
                   />
                 </div>
@@ -278,61 +278,61 @@ function StudentManagementContent() {
             )}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1">ชื่อ *</label>
+                <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">ชื่อ *</label>
                 <input
                   type="text"
                   value={formData.first_name}
                   onChange={e => setFormData({...formData, first_name: e.target.value})}
-                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none"
+                  className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-400 dark:focus:border-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1">นามสกุล *</label>
+                <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">นามสกุล *</label>
                 <input
                   type="text"
                   value={formData.last_name}
                   onChange={e => setFormData({...formData, last_name: e.target.value})}
-                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none"
+                  className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-400 dark:focus:border-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
                 />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1">ชื่อเล่น</label>
+              <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">ชื่อเล่น</label>
               <input
                 type="text"
                 value={formData.nickname}
                 onChange={e => setFormData({...formData, nickname: e.target.value})}
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none"
+                className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-400 dark:focus:border-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1">ระดับชั้น *</label>
+                <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">ระดับชั้น *</label>
                 <select
                   value={formData.grade_level}
                   onChange={e => setFormData({...formData, grade_level: e.target.value})}
-                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none"
+                  className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-400 dark:focus:border-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
                 >
                   <option value="">เลือก</option>
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1">ห้อง</label>
+                <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">ห้อง</label>
                 <input
                   type="text"
                   value={formData.classroom}
                   onChange={e => setFormData({...formData, classroom: e.target.value})}
-                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none"
+                  className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-400 dark:focus:border-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
                   placeholder="1/1"
                 />
               </div>
             </div>
           </div>
-          <div className="p-6 border-t border-slate-100 flex gap-3">
+          <div className="p-6 border-t border-slate-100 dark:border-slate-700 flex gap-3">
             <button
               onClick={onClose}
-              className="flex-1 py-2.5 border border-slate-200 rounded-xl hover:bg-slate-50 transition font-medium"
+              className="flex-1 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition font-medium text-slate-700 dark:text-slate-300"
             >
               ยกเลิก
             </button>
@@ -349,20 +349,20 @@ function StudentManagementContent() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
+    <div className="min-h-screen bg-slate-50 dark:bg-brand-dark p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <button
               onClick={() => router.push('/admin/dashboard')}
-              className="p-2 hover:bg-slate-100 rounded-xl transition"
+              className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition text-slate-600 dark:text-slate-400"
             >
               <BackIcon />
             </button>
             <div>
-              <h1 className="text-2xl font-bold text-slate-800">จัดการบัญชีนักเรียน</h1>
-              <p className="text-slate-500 text-sm">เพิ่ม/แก้ไข/ลบบัญชีนักเรียนในระบบ</p>
+              <h1 className="text-2xl font-bold text-slate-800 dark:text-white">จัดการบัญชีนักเรียน</h1>
+              <p className="text-slate-500 dark:text-slate-400 text-sm">เพิ่ม/แก้ไข/ลบบัญชีนักเรียนในระบบ</p>
             </div>
           </div>
           <button
@@ -376,13 +376,13 @@ function StudentManagementContent() {
 
         {/* Message */}
         {message && (
-          <div className={`mb-4 p-4 rounded-xl ${messageType === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+          <div className={`mb-4 p-4 rounded-xl ${messageType === 'success' ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400' : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400'}`}>
             {message}
           </div>
         )}
 
         {/* Filters */}
-        <div className="bg-white rounded-2xl shadow-sm p-4 mb-6 flex flex-col md:flex-row gap-4">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm p-4 mb-6 flex flex-col md:flex-row gap-4 border border-slate-200 dark:border-slate-700">
           <div className="relative flex-1">
             <div className="absolute inset-y-0 left-3 flex items-center text-slate-400">
               <SearchIcon />
@@ -392,13 +392,13 @@ function StudentManagementContent() {
               placeholder="ค้นหาชื่อหรือรหัสนักเรียน..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none"
+              className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-400 dark:focus:border-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
             />
           </div>
           <select
             value={gradeFilter}
             onChange={e => setGradeFilter(e.target.value)}
-            className="px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none"
+            className="px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-400 dark:focus:border-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
           >
             <option value="">ทุกระดับชั้น</option>
             {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
@@ -406,22 +406,22 @@ function StudentManagementContent() {
         </div>
 
         {/* Student List */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm overflow-hidden border border-slate-200 dark:border-slate-700">
           {isLoading ? (
             <div className="p-12 text-center">
-              <div className="w-10 h-10 border-4 border-blue-100 border-t-blue-500 rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-slate-500">กำลังโหลด...</p>
+              <div className="w-10 h-10 border-4 border-blue-100 dark:border-blue-900 border-t-blue-500 rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-slate-500 dark:text-slate-400">กำลังโหลด...</p>
             </div>
           ) : filteredStudents.length === 0 ? (
             <div className="p-12 text-center">
               <p className="text-4xl mb-4">📭</p>
-              <p className="text-slate-500">ไม่พบข้อมูลนักเรียน</p>
+              <p className="text-slate-500 dark:text-slate-400">ไม่พบข้อมูลนักเรียน</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-slate-50">
-                  <tr className="text-left text-xs font-bold uppercase text-slate-400 tracking-wider">
+                <thead className="bg-slate-50 dark:bg-slate-900/50">
+                  <tr className="text-left text-xs font-bold uppercase text-slate-400 dark:text-slate-500 tracking-wider">
                     <th className="px-6 py-4">รหัสนักเรียน</th>
                     <th className="px-6 py-4">ชื่อ-นามสกุล</th>
                     <th className="px-6 py-4">ระดับชั้น</th>
@@ -430,20 +430,20 @@ function StudentManagementContent() {
                     <th className="px-6 py-4 text-right">จัดการ</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                   {filteredStudents.map(student => (
-                    <tr key={student.id} className="hover:bg-blue-50/30 transition">
-                      <td className="px-6 py-4 font-mono text-sm text-slate-700">{student.student_id}</td>
+                    <tr key={student.id} className="hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition">
+                      <td className="px-6 py-4 font-mono text-sm text-slate-700 dark:text-slate-300">{student.student_id}</td>
                       <td className="px-6 py-4">
                         <div>
-                          <p className="font-medium text-slate-800">{student.first_name} {student.last_name}</p>
-                          {student.nickname && <p className="text-sm text-slate-400">({student.nickname})</p>}
+                          <p className="font-medium text-slate-800 dark:text-white">{student.first_name} {student.last_name}</p>
+                          {student.nickname && <p className="text-sm text-slate-400 dark:text-slate-500">({student.nickname})</p>}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-slate-600">{student.grade_level}</td>
-                      <td className="px-6 py-4 text-slate-600">{student.classroom || '-'}</td>
+                      <td className="px-6 py-4 text-slate-600 dark:text-slate-400">{student.grade_level}</td>
+                      <td className="px-6 py-4 text-slate-600 dark:text-slate-400">{student.classroom || '-'}</td>
                       <td className="px-6 py-4">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${student.is_active ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${student.is_active ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400' : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'}`}>
                           {student.is_active ? 'ใช้งาน' : 'ปิดใช้งาน'}
                         </span>
                       </td>
@@ -451,19 +451,19 @@ function StudentManagementContent() {
                         <div className="flex justify-end gap-2">
                           <button
                             onClick={() => openEditModal(student)}
-                            className="px-3 py-1.5 text-blue-500 hover:bg-blue-50 rounded-lg text-sm font-medium"
+                            className="px-3 py-1.5 text-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-sm font-medium"
                           >
                             แก้ไข
                           </button>
                           <button
                             onClick={() => handleResetPassword(student.id!)}
-                            className="px-3 py-1.5 text-amber-500 hover:bg-amber-50 rounded-lg text-sm font-medium"
+                            className="px-3 py-1.5 text-amber-500 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg text-sm font-medium"
                           >
                             รีเซ็ตรหัส
                           </button>
                           <button
                             onClick={() => handleDeleteStudent(student.id!)}
-                            className="px-3 py-1.5 text-red-500 hover:bg-red-50 rounded-lg text-sm font-medium"
+                            className="px-3 py-1.5 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-sm font-medium"
                           >
                             ลบ
                           </button>
