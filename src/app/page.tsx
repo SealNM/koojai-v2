@@ -48,10 +48,10 @@ export default function HomePage() {
   return (
     <AppLayout>
       <div className="flex-1 overflow-y-auto overflow-x-hidden bg-background p-4 md:p-8">
-        {/* Increased max-width for better large screen experience */}
-        <div className="max-w-7xl mx-auto space-y-8 pb-10">
+        {/* Full width container to avoid empty left gap on large screens */}
+        <div className="w-full space-y-8 pb-10">
             {/* Header */}
-            <motion.div 
+            <motion.div  
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="flex flex-col md:flex-row md:items-end justify-between gap-4"
