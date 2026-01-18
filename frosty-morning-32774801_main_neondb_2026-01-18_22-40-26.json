@@ -1,0 +1,379 @@
+[{
+  "table_name": "moods",
+  "column_name": "id",
+  "data_type": "integer",
+  "is_nullable": "NO",
+  "column_default": "nextval('moods_id_seq'::regclass)",
+  "character_maximum_length": null,
+  "numeric_precision": 32,
+  "numeric_scale": 0
+}, {
+  "table_name": "moods",
+  "column_name": "student_id",
+  "data_type": "text",
+  "is_nullable": "NO",
+  "column_default": null,
+  "character_maximum_length": null,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "moods",
+  "column_name": "mood",
+  "data_type": "text",
+  "is_nullable": "NO",
+  "column_default": null,
+  "character_maximum_length": null,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "moods",
+  "column_name": "created_at",
+  "data_type": "timestamp with time zone",
+  "is_nullable": "YES",
+  "column_default": "now()",
+  "character_maximum_length": null,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "reports",
+  "column_name": "id",
+  "data_type": "integer",
+  "is_nullable": "NO",
+  "column_default": "nextval('reports_id_seq'::regclass)",
+  "character_maximum_length": null,
+  "numeric_precision": 32,
+  "numeric_scale": 0
+}, {
+  "table_name": "reports",
+  "column_name": "student_id",
+  "data_type": "text",
+  "is_nullable": "NO",
+  "column_default": null,
+  "character_maximum_length": null,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "reports",
+  "column_name": "severity_level",
+  "data_type": "text",
+  "is_nullable": "NO",
+  "column_default": null,
+  "character_maximum_length": null,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "reports",
+  "column_name": "problem_category",
+  "data_type": "ARRAY",
+  "is_nullable": "YES",
+  "column_default": null,
+  "character_maximum_length": null,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "reports",
+  "column_name": "summary_for_teacher",
+  "data_type": "text",
+  "is_nullable": "YES",
+  "column_default": null,
+  "character_maximum_length": null,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "reports",
+  "column_name": "recommendation_for_teacher",
+  "data_type": "text",
+  "is_nullable": "YES",
+  "column_default": null,
+  "character_maximum_length": null,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "reports",
+  "column_name": "should_notify_teacher",
+  "data_type": "boolean",
+  "is_nullable": "YES",
+  "column_default": "false",
+  "character_maximum_length": null,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "reports",
+  "column_name": "memory_for_next_session",
+  "data_type": "text",
+  "is_nullable": "YES",
+  "column_default": null,
+  "character_maximum_length": null,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "reports",
+  "column_name": "healing_quote",
+  "data_type": "text",
+  "is_nullable": "YES",
+  "column_default": null,
+  "character_maximum_length": null,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "reports",
+  "column_name": "created_at",
+  "data_type": "timestamp with time zone",
+  "is_nullable": "YES",
+  "column_default": "now()",
+  "character_maximum_length": null,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "sessions",
+  "column_name": "id",
+  "data_type": "integer",
+  "is_nullable": "NO",
+  "column_default": "nextval('sessions_id_seq'::regclass)",
+  "character_maximum_length": null,
+  "numeric_precision": 32,
+  "numeric_scale": 0
+}, {
+  "table_name": "sessions",
+  "column_name": "user_id",
+  "data_type": "integer",
+  "is_nullable": "NO",
+  "column_default": null,
+  "character_maximum_length": null,
+  "numeric_precision": 32,
+  "numeric_scale": 0
+}, {
+  "table_name": "sessions",
+  "column_name": "user_type",
+  "data_type": "character varying",
+  "is_nullable": "NO",
+  "column_default": null,
+  "character_maximum_length": 20,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "sessions",
+  "column_name": "token",
+  "data_type": "character varying",
+  "is_nullable": "NO",
+  "column_default": null,
+  "character_maximum_length": 500,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "sessions",
+  "column_name": "expires_at",
+  "data_type": "timestamp without time zone",
+  "is_nullable": "NO",
+  "column_default": null,
+  "character_maximum_length": null,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "sessions",
+  "column_name": "created_at",
+  "data_type": "timestamp without time zone",
+  "is_nullable": "YES",
+  "column_default": "now()",
+  "character_maximum_length": null,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "students",
+  "column_name": "id",
+  "data_type": "integer",
+  "is_nullable": "NO",
+  "column_default": "nextval('students_id_seq'::regclass)",
+  "character_maximum_length": null,
+  "numeric_precision": 32,
+  "numeric_scale": 0
+}, {
+  "table_name": "students",
+  "column_name": "student_id",
+  "data_type": "character varying",
+  "is_nullable": "NO",
+  "column_default": null,
+  "character_maximum_length": 50,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "students",
+  "column_name": "email",
+  "data_type": "character varying",
+  "is_nullable": "NO",
+  "column_default": null,
+  "character_maximum_length": 255,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "students",
+  "column_name": "password_hash",
+  "data_type": "character varying",
+  "is_nullable": "NO",
+  "column_default": null,
+  "character_maximum_length": 255,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "students",
+  "column_name": "first_name",
+  "data_type": "character varying",
+  "is_nullable": "NO",
+  "column_default": null,
+  "character_maximum_length": 100,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "students",
+  "column_name": "last_name",
+  "data_type": "character varying",
+  "is_nullable": "NO",
+  "column_default": null,
+  "character_maximum_length": 100,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "students",
+  "column_name": "nickname",
+  "data_type": "character varying",
+  "is_nullable": "YES",
+  "column_default": null,
+  "character_maximum_length": 50,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "students",
+  "column_name": "grade_level",
+  "data_type": "character varying",
+  "is_nullable": "NO",
+  "column_default": null,
+  "character_maximum_length": 20,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "students",
+  "column_name": "classroom",
+  "data_type": "character varying",
+  "is_nullable": "YES",
+  "column_default": null,
+  "character_maximum_length": 20,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "students",
+  "column_name": "birth_date",
+  "data_type": "date",
+  "is_nullable": "YES",
+  "column_default": null,
+  "character_maximum_length": null,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "students",
+  "column_name": "profile_image_url",
+  "data_type": "text",
+  "is_nullable": "YES",
+  "column_default": null,
+  "character_maximum_length": null,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "students",
+  "column_name": "is_active",
+  "data_type": "boolean",
+  "is_nullable": "YES",
+  "column_default": "true",
+  "character_maximum_length": null,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "students",
+  "column_name": "created_at",
+  "data_type": "timestamp without time zone",
+  "is_nullable": "YES",
+  "column_default": "now()",
+  "character_maximum_length": null,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "students",
+  "column_name": "updated_at",
+  "data_type": "timestamp without time zone",
+  "is_nullable": "YES",
+  "column_default": "now()",
+  "character_maximum_length": null,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "teachers",
+  "column_name": "id",
+  "data_type": "integer",
+  "is_nullable": "NO",
+  "column_default": "nextval('teachers_id_seq'::regclass)",
+  "character_maximum_length": null,
+  "numeric_precision": 32,
+  "numeric_scale": 0
+}, {
+  "table_name": "teachers",
+  "column_name": "email",
+  "data_type": "character varying",
+  "is_nullable": "NO",
+  "column_default": null,
+  "character_maximum_length": 255,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "teachers",
+  "column_name": "password_hash",
+  "data_type": "character varying",
+  "is_nullable": "NO",
+  "column_default": null,
+  "character_maximum_length": 255,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "teachers",
+  "column_name": "first_name",
+  "data_type": "character varying",
+  "is_nullable": "NO",
+  "column_default": null,
+  "character_maximum_length": 100,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "teachers",
+  "column_name": "last_name",
+  "data_type": "character varying",
+  "is_nullable": "NO",
+  "column_default": null,
+  "character_maximum_length": 100,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "teachers",
+  "column_name": "role",
+  "data_type": "character varying",
+  "is_nullable": "YES",
+  "column_default": "'teacher'::character varying",
+  "character_maximum_length": 20,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "teachers",
+  "column_name": "is_active",
+  "data_type": "boolean",
+  "is_nullable": "YES",
+  "column_default": "true",
+  "character_maximum_length": null,
+  "numeric_precision": null,
+  "numeric_scale": null
+}, {
+  "table_name": "teachers",
+  "column_name": "created_at",
+  "data_type": "timestamp without time zone",
+  "is_nullable": "YES",
+  "column_default": "now()",
+  "character_maximum_length": null,
+  "numeric_precision": null,
+  "numeric_scale": null
+}]
