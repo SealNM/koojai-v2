@@ -26,6 +26,7 @@ import {
   StopIcon as StopIconUI,
   UsersIcon,
   FlagIcon,
+  ChevronLeftIcon,
 } from '@/components/ui/Icons';
 
 // KooJai Character ID (constant)
@@ -796,27 +797,36 @@ ${contextSection}
       <div className="h-screen w-screen flex flex-col bg-gray-50 dark:bg-[#0f172a] relative overflow-hidden animate-fade-in">
         {/* Header - Dark Theme */}
         <header className="p-3 sm:p-4 flex justify-between items-center z-20 absolute top-0 left-0 right-0">
-          <button
-            onClick={() => {
-              if (messages.length > 0 || (mode === 'voice' && conversationLogRef.current.length > 0)) {
-                if (confirm('คุณต้องการจบการสนทนาและสรุปรายงานตอนนี้เลยไหม?')) {
-                  finalizeAndReport();
+          <div className="flex items-center space-x-2">
+            {/* Back Button - ปุ่มกลับหน้าหลัก */}
+            <button
+              onClick={() => {
+                if (messages.length > 0 || (mode === 'voice' && conversationLogRef.current.length > 0)) {
+                  if (confirm('คุณต้องการจบการสนทนาและสรุปรายงานตอนนี้เลยไหม?')) {
+                    finalizeAndReport();
+                  } else {
+                    router.push('/');
+                  }
                 } else {
                   router.push('/');
                 }
-              } else {
-                router.push('/');
-              }
-            }}
-            className="flex items-center space-x-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md px-3 py-2 rounded-full border border-gray-200 dark:border-slate-700 shadow-sm hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
-          >
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center p-1.5">
-              <KooJaiIcon className="w-5 h-5 text-white" />
+              }}
+              className="p-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-full border border-gray-200 dark:border-slate-700 shadow-sm hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+              title="กลับหน้าหลัก"
+            >
+              <ChevronLeftIcon className="w-5 h-5 text-gray-700 dark:text-white" />
+            </button>
+            
+            {/* KooJai Logo */}
+            <div className="flex items-center space-x-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md px-3 py-2 rounded-full border border-gray-200 dark:border-slate-700 shadow-sm">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center p-1.5">
+                <KooJaiIcon className="w-5 h-5 text-white" />
+              </div>
+              <div className="hidden sm:block">
+                <h2 className="font-bold text-gray-900 dark:text-white text-sm">KooJai</h2>
+              </div>
             </div>
-            <div className="hidden sm:block">
-              <h2 className="font-bold text-gray-900 dark:text-white text-sm">KooJai</h2>
-            </div>
-          </button>
+          </div>
 
           <div className="flex items-center space-x-2">
             {/* Mode Toggle Button */}

@@ -152,22 +152,25 @@ function HomePage() {
   // Load characters
   useEffect(() => {
     const loadCharacters = async () => {
-      if (user?.student_id) {
+      // Only load if authenticated and has student_id
+      if (!isLoading && isAuthenticated && user?.student_id) {
         try {
+          console.log('Loading characters for student:', user.student_id);
           const chars = await getCharacters(user.student_id);
+          console.log('Loaded characters:', chars);
           setCharacters(chars);
         } catch (error) {
           console.error('Failed to load characters:', error);
-        } finally {
-          setIsLoadingChars(false);
         }
+      }
+      // Always set loading to false after auth is complete
+      if (!isLoading) {
+        setIsLoadingChars(false);
       }
     };
 
-    if (isAuthenticated && user?.student_id) {
-      loadCharacters();
-    }
-  }, [user, isAuthenticated]);
+    loadCharacters();
+  }, [user, isAuthenticated, isLoading]);
 
   // Show loading while checking auth
   if (isLoading || !isAuthenticated || user?.user_type === 'teacher') {

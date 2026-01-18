@@ -98,26 +98,30 @@ function KooJaiCardItem({ onVoiceChat, onTextChat }: { onVoiceChat: () => void; 
 
 function CharactersPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [characters, setCharacters] = useState<Character[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadCharacters = async () => {
+      // Wait for auth to complete
+      if (authLoading) return;
+      
       if (user?.student_id) {
         try {
+          console.log('Loading characters for student:', user.student_id);
           const chars = await getCharacters(user.student_id);
+          console.log('Loaded characters:', chars);
           setCharacters(chars);
         } catch (error) {
           console.error('Failed to load characters:', error);
-        } finally {
-          setIsLoading(false);
         }
       }
+      setIsLoading(false);
     };
 
     loadCharacters();
-  }, [user]);
+  }, [user, authLoading]);
 
   return (
     <ProtectedRoute>
