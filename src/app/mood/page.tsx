@@ -3,153 +3,191 @@
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { Button } from '@/components/ui/Button';
+import { KooJaiIcon } from '@/components/ui/Icons';
+import { 
+  Smile, 
+  Meh, 
+  Frown, 
+  CloudRain, 
+  Zap, 
+  ArrowRight,
+  Sparkles
+} from 'lucide-react';
+import { motion } from 'framer-motion';
 import { MoodEntry } from '@/types';
-import { SmileIcon, MehIcon, FrownIcon, CloudIcon, ZapIcon, ArrowRightIcon, KooJaiIcon } from '@/components/ui/Icons';
 
 /**
  * 🎨 MoodPage - Modern Dark Theme
- * หน้าเลือกอารมณ์ก่อนเริ่มแชท - ดีไซน์แบบ TalkMosaic
+ * Mood selection screen before starting chat
  */
 
 const moods = [
   { 
     mood: 'happy', 
-    icon: SmileIcon, 
-    label: 'มีความสุข', 
-    color: 'from-emerald-500/20 to-green-500/20',
-    borderColor: 'border-emerald-500/30 hover:border-emerald-400',
-    iconColor: 'text-emerald-400',
-    bgHover: 'hover:bg-emerald-500/10'
+    icon: Smile, 
+    label: 'Happy', 
+    color: 'text-emerald-500', 
+    bg: 'bg-emerald-500/10 hover:bg-emerald-500/20',
+    border: 'border-emerald-500/20 hover:border-emerald-500/50',
+    gradient: 'from-emerald-500/20 to-green-500/5'
   },
   { 
     mood: 'neutral', 
-    icon: MehIcon, 
-    label: 'เฉยๆ', 
-    color: 'from-slate-500/20 to-gray-500/20',
-    borderColor: 'border-slate-500/30 hover:border-slate-400',
-    iconColor: 'text-slate-400',
-    bgHover: 'hover:bg-slate-500/10'
+    icon: Meh, 
+    label: 'Neutral', 
+    color: 'text-blue-400', 
+    bg: 'bg-blue-500/10 hover:bg-blue-500/20',
+    border: 'border-blue-500/20 hover:border-blue-500/50',
+    gradient: 'from-blue-500/20 to-slate-500/5'
   },
   { 
     mood: 'tired', 
-    icon: CloudIcon, 
-    label: 'เหนื่อย', 
-    color: 'from-blue-500/20 to-indigo-500/20',
-    borderColor: 'border-blue-500/30 hover:border-blue-400',
-    iconColor: 'text-blue-400',
-    bgHover: 'hover:bg-blue-500/10'
+    icon: CloudRain, 
+    label: 'Tired', 
+    color: 'text-slate-400', 
+    bg: 'bg-slate-500/10 hover:bg-slate-500/20',
+    border: 'border-slate-500/20 hover:border-slate-500/50',
+    gradient: 'from-slate-500/20 to-gray-500/5'
   },
   { 
     mood: 'sad', 
-    icon: FrownIcon, 
-    label: 'เศร้า', 
-    color: 'from-violet-500/20 to-purple-500/20',
-    borderColor: 'border-violet-500/30 hover:border-violet-400',
-    iconColor: 'text-violet-400',
-    bgHover: 'hover:bg-violet-500/10'
+    icon: Frown, 
+    label: 'Sad', 
+    color: 'text-violet-400', 
+    bg: 'bg-violet-500/10 hover:bg-violet-500/20',
+    border: 'border-violet-500/20 hover:border-violet-500/50',
+    gradient: 'from-violet-500/20 to-purple-500/5'
   },
   { 
     mood: 'angry', 
-    icon: ZapIcon, 
-    label: 'หงุดหงิด', 
-    color: 'from-red-500/20 to-orange-500/20',
-    borderColor: 'border-red-500/30 hover:border-red-400',
-    iconColor: 'text-red-400',
-    bgHover: 'hover:bg-red-500/10'
+    icon: Zap, 
+    label: 'Frustrated', 
+    color: 'text-orange-500', 
+    bg: 'bg-orange-500/10 hover:bg-orange-500/20',
+    border: 'border-orange-500/20 hover:border-orange-500/50',
+    gradient: 'from-orange-500/20 to-red-500/5'
   },
-];
+] as const;
 
 function MoodSelector() {
   const router = useRouter();
   const { user } = useAuth();
-
+  
   const handleMoodSelect = async (mood: MoodEntry['mood']) => {
-    if (!user?.student_id) return;
-
-    try {
-      // บันทึกอารมณ์ผ่าน API
-      await fetch('/api/mood/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          student_id: user.student_id,
-          mood,
-        }),
-      });
-    } catch (error) {
-      console.error('Error saving mood:', error);
+    if (user?.student_id) {
+      try {
+        await fetch('/api/mood/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            student_id: user.student_id,
+            mood,
+          }),
+        });
+      } catch (error) {
+        console.error('Error saving mood:', error);
+      }
     }
+    // Navigate to KooJai chat (default) with mood param
+    router.push(`/characters/koojai/chat?mood=${mood}`);
+  };
 
-    // ไปหน้าแชทพร้อมส่ง mood ไปด้วย
-    router.push(`/chat?mood=${mood}`);
+  const containerVariants = {
+    hidden: { opacity: 0, scale: 0.95 },
+    visible: { 
+      opacity: 1, 
+      scale: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gray-50 dark:bg-[#0f172a]">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 dark:bg-blue-600/15 rounded-full blur-[120px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/10 dark:bg-indigo-600/15 rounded-full blur-[120px]" />
+    <div className="min-h-screen w-full flex flex-col items-center justify-center p-6 bg-slate-50 dark:bg-[#0f0d1a] relative overflow-hidden">
+      
+      {/* Background Decor */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-violet-600/20 rounded-full blur-[128px]" />
+        <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[128px]" />
       </div>
 
-      <div className="relative z-10 w-full max-w-lg">
-        {/* Logo */}
-        <div className="flex justify-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-xl shadow-blue-600/25 animate-float">
-            <KooJaiIcon className="w-10 h-10 text-white" />
-          </div>
-        </div>
-
-        {/* Header */}
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
-            สวัสดี {user?.nickname || user?.first_name || 'เพื่อน'} 👋
-          </h2>
-          <p className="text-gray-600 dark:text-slate-400 text-lg">วันนี้รู้สึกยังไงบ้าง?</p>
-          <p className="text-gray-400 dark:text-slate-600 text-sm mt-2">บอกให้เรารู้หน่อยนะ</p>
-        </div>
-
-        {/* Mood Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
-          {moods.map((m) => {
-            const Icon = m.icon;
-            return (
-              <button
-                key={m.mood}
-                onClick={() => handleMoodSelect(m.mood as MoodEntry['mood'])}
-                className={`
-                  flex flex-col items-center justify-center p-6 
-                  bg-white/80 dark:bg-slate-900/50 backdrop-blur-sm rounded-2xl 
-                  border-2 ${m.borderColor}
-                  transition-all duration-300 
-                  transform hover:scale-105 active:scale-95 
-                  ${m.bgHover}
-                  group
-                  shadow-sm dark:shadow-none
-                `}
-              >
-                <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${m.color} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
-                  <Icon className={`w-8 h-8 ${m.iconColor}`} />
-                </div>
-                <span className="text-sm text-gray-700 dark:text-slate-300 font-medium group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
-                  {m.label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Skip Option */}
-        <div className="text-center">
-          <button
-            onClick={() => router.push('/chat')}
-            className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-slate-500 hover:text-blue-500 dark:hover:text-blue-400 transition-colors group"
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="relative z-10 w-full max-w-2xl"
+      >
+        <div className="flex flex-col items-center mb-10 text-center">
+          <motion.div 
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 260, damping: 20 }}
+            className="w-20 h-20 bg-gradient-to-br from-violet-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-xl shadow-indigo-500/20 mb-6"
           >
-            <span>ข้ามขั้นตอนนี้</span>
-            <ArrowRightIcon className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </button>
+            <KooJaiIcon className="w-12 h-12 text-white" />
+          </motion.div>
+          
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 mb-3">
+            Hello, {user?.nickname || user?.first_name || 'Friend'} 👋
+          </h1>
+          <p className="text-slate-600 dark:text-slate-400 text-lg flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-amber-400" />
+            How are you feeling today?
+          </p>
         </div>
-      </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
+          {moods.map((m) => (
+            <motion.button
+              key={m.mood}
+              variants={itemVariants}
+              whileHover={{ scale: 1.05, y: -5 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => handleMoodSelect(m.mood as MoodEntry['mood'])}
+              className={`
+                group relative flex flex-col items-center justify-center p-6 h-40
+                rounded-3xl border bg-white/50 dark:bg-slate-900/50 backdrop-blur-md
+                transition-all duration-300 shadow-sm hover:shadow-lg
+                ${m.border} ${m.bg}
+              `}
+            >
+              {/* Graduate Accent */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${m.gradient} rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity`} />
+              
+              <div className={`
+                relative z-10 w-16 h-16 rounded-2xl mb-3 flex items-center justify-center
+                bg-white dark:bg-slate-800 shadow-sm group-hover:shadow-md transition-all
+              `}>
+                <m.icon className={`w-8 h-8 ${m.color}`} />
+              </div>
+              
+              <span className="relative z-10 text-slate-700 dark:text-slate-300 font-medium group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+                {m.label}
+              </span>
+            </motion.button>
+          ))}
+        </div>
+
+        <motion.div variants={itemVariants} className="flex justify-center">
+          <Button 
+            variant="ghost" 
+            onClick={() => router.push('/chat')}
+            className="text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400"
+          >
+            Skip for now 
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
+        </motion.div>
+
+      </motion.div>
     </div>
   );
 }

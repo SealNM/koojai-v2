@@ -10,12 +10,12 @@
 |---|------|------|----------|-------|
 | 1 | 🔐 Login | `src/app/login/page.tsx` | หน้าเข้าสู่ระบบนักเรียน | ✅ |
 | 2 | 🏠 Home | `src/app/page.tsx` | หน้าแรก แสดงคาแรกเตอร์และเมนูหลัก | ✅ |
-| 3 | 😊 Mood Check-in | `src/app/mood/page.tsx` | หน้าบันทึกอารมณ์ประจำวัน | ⬜ |
+| 3 | 😊 Mood Check-in | `src/app/mood/page.tsx` | หน้าบันทึกอารมณ์ประจำวัน | ✅ |
 | 4 | 🎭 Characters List | `src/app/characters/page.tsx` | หน้ารายการคาแรกเตอร์ทั้งหมด | ✅ |
 | 5 | ✨ Create Character | `src/app/characters/create/page.tsx` | หน้าสร้างคาแรกเตอร์ใหม่ | ✅ |
 | 6 | 💬 Chat with Character | `src/app/characters/[id]/chat/page.tsx` | หน้าแชทกับคาแรกเตอร์ (Text + Voice) | ✅ |
-| 7 | 📝 Chat History | `src/app/chat/page.tsx` | หน้าประวัติการแชท | ⬜ |
-| 8 | 👤 Profile | `src/app/profile/page.tsx` | หน้าโปรไฟล์และตั้งค่า | ⬜ |
+| 7 | 📝 Chat History | `src/app/chat/page.tsx` | หน้าประวัติการแชท | ✅ |
+| 8 | 👤 Profile | `src/app/profile/page.tsx` | หน้าโปรไฟล์และตั้งค่า | ✅ |
 
 ---
 

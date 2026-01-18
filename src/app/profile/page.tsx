@@ -5,48 +5,47 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { AppLayout } from '@/components/layout';
-import { Button, Card, Input } from '@/components/ui';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { Input } from '@/components/ui/Input';
+import { Avatar } from '@/components/ui/Avatar';
+import { Badge } from '@/components/ui/Badge';
 import { 
-  ChevronLeftIcon, 
-  UserIcon, 
-  LockIcon,
-  LogOutIcon,
-  SaveIcon,
-  CheckIcon,
-  XIcon,
-} from '@/components/ui/Icons';
-
-/**
- * 👤 ProfilePage - Modern Dark Theme
- * ดีไซน์แบบ BeeBot/TalkMosaic
- */
+  User, 
+  Lock, 
+  LogOut, 
+  Save, 
+  Shield, 
+  AlertCircle,
+  CheckCircle2,
+  Camera
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function ProfileContent() {
   const router = useRouter();
   const { user, logout } = useAuth();
+  
+  const [activeTab, setActiveTab] = useState<'details' | 'security'>('details');
 
-  // Tabs
-  const [activeTab, setActiveTab] = useState<'profile' | 'password'>('profile');
-
-  // Profile Form
+  // Profile Form States
   const [nickname, setNickname] = useState(user?.nickname || '');
   const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [saveMessage, setSaveMessage] = useState('');
-  const [isSuccess, setIsSuccess] = useState(false);
 
-  // Password Form
+  // Password Form States
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordMessage, setPasswordMessage] = useState('');
   const [isChangingPassword, setIsChangingPassword] = useState(false);
-  const [passwordSuccess, setPasswordSuccess] = useState(false);
+  const [passwordStatus, setPasswordStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [passwordMessage, setPasswordMessage] = useState('');
 
   const handleSaveProfile = async () => {
     if (!user?.id) return;
     setIsSaving(true);
-    setSaveMessage('');
-    setIsSuccess(false);
+    setSaveStatus('idle');
 
     try {
       const response = await fetch('/api/profile', {
@@ -57,35 +56,35 @@ function ProfileContent() {
 
       const result = await response.json();
       if (result.success) {
-        setSaveMessage('บันทึกสำเร็จ');
-        setIsSuccess(true);
+        setSaveStatus('success');
+        setSaveMessage('Profile updated successfully');
       } else {
-        setSaveMessage(result.message || 'เกิดข้อผิดพลาด');
-        setIsSuccess(false);
+        setSaveStatus('error');
+        setSaveMessage(result.message || 'Failed to update profile');
       }
     } catch {
-      setSaveMessage('เกิดข้อผิดพลาด');
-      setIsSuccess(false);
+      setSaveStatus('error');
+      setSaveMessage('An unexpected error occurred');
     } finally {
       setIsSaving(false);
-      setTimeout(() => setSaveMessage(''), 3000);
+      setTimeout(() => setSaveStatus('idle'), 3000);
     }
   };
 
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
-      setPasswordMessage('รหัสผ่านใหม่ไม่ตรงกัน');
-      setPasswordSuccess(false);
+      setPasswordStatus('error');
+      setPasswordMessage('New passwords do not match');
       return;
     }
     if (newPassword.length < 6) {
-      setPasswordMessage('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร');
-      setPasswordSuccess(false);
+      setPasswordStatus('error');
+      setPasswordMessage('Password must be at least 6 characters');
       return;
     }
 
     setIsChangingPassword(true);
-    setPasswordMessage('');
+    setPasswordStatus('idle');
 
     try {
       const response = await fetch('/api/profile/password', {
@@ -96,20 +95,21 @@ function ProfileContent() {
 
       const result = await response.json();
       if (result.success) {
-        setPasswordMessage('เปลี่ยนรหัสผ่านสำเร็จ');
-        setPasswordSuccess(true);
+        setPasswordStatus('success');
+        setPasswordMessage('Password changed successfully');
         setOldPassword('');
         setNewPassword('');
         setConfirmPassword('');
       } else {
-        setPasswordMessage(result.message || 'เกิดข้อผิดพลาด');
-        setPasswordSuccess(false);
+        setPasswordStatus('error');
+        setPasswordMessage(result.message || 'Failed to change password');
       }
     } catch {
-      setPasswordMessage('เกิดข้อผิดพลาด');
-      setPasswordSuccess(false);
+      setPasswordStatus('error');
+      setPasswordMessage('An unexpected error occurred');
     } finally {
       setIsChangingPassword(false);
+      setTimeout(() => setPasswordStatus('idle'), 3000);
     }
   };
 
@@ -120,173 +120,215 @@ function ProfileContent() {
 
   return (
     <AppLayout>
-      <div className="min-h-screen p-6 lg:p-8">
-        <div className="max-w-2xl mx-auto">
+      <div className="flex-1 bg-slate-50 dark:bg-[#0f0d1a] p-4 md:p-8 overflow-y-auto">
+        <div className="max-w-4xl mx-auto pb-20">
           
-          {/* Header */}
-          <div className="flex items-center gap-4 mb-8">
-            <button
-              onClick={() => router.back()}
-              className="p-2 bg-white dark:bg-slate-800 rounded-xl text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors border border-gray-200 dark:border-slate-700"
-            >
-              <ChevronLeftIcon className="w-5 h-5" />
-            </button>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">โปรไฟล์</h1>
-              <p className="text-gray-500 dark:text-slate-400 text-sm">จัดการข้อมูลส่วนตัวของคุณ</p>
-            </div>
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">My Profile</h1>
+            <p className="text-slate-500 dark:text-slate-400">Manage your account settings and preferences</p>
           </div>
 
-          {/* User Info Card */}
-          <Card variant="gradient" padding="lg" className="mb-6">
-            <div className="flex items-center gap-5">
-              <div className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-3xl border border-white/10">
-                {user?.profile_image_url ? (
-                  <img src={user.profile_image_url} alt="" className="w-full h-full rounded-2xl object-cover" />
-                ) : (
-                  <UserIcon className="w-10 h-10 text-white" />
-                )}
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold text-white">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            {/* Left Column: User Card & Menu */}
+            <div className="lg:col-span-4 space-y-6">
+              <Card className="p-6 flex flex-col items-center text-center">
+                <div className="relative mb-4 group cursor-pointer">
+                   <Avatar 
+                      name={user?.nickname || user?.first_name || 'User'} 
+                      size="xl" 
+                      className="w-24 h-24 ring-4 ring-slate-100 dark:ring-slate-800"
+                   />
+                   <div className="absolute bottom-0 right-0 p-1.5 bg-indigo-500 rounded-full text-white ring-2 ring-white dark:ring-slate-900 group-hover:bg-indigo-600 transition-colors">
+                      <Camera className="w-4 h-4" />
+                   </div>
+                </div>
+                
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">
                   {user?.first_name} {user?.last_name}
                 </h2>
-                <p className="text-blue-100 dark:text-blue-200">{user?.student_id}</p>
-                <p className="text-sm text-blue-200/70 dark:text-blue-300/70">
-                  {user?.grade_level} {user?.classroom && `ห้อง ${user.classroom}`}
+                <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">
+                  Student ID: {user?.student_id}
                 </p>
-              </div>
+                
+                <Badge variant="primary" className="mb-6">Student</Badge>
+                
+                <div className="w-full space-y-2">
+                  <Button 
+                    variant={activeTab === 'details' ? 'primary' : 'ghost'} 
+                    className="w-full justify-start" 
+                    onClick={() => setActiveTab('details')}
+                    leftIcon={<User className="w-4 h-4" />}
+                  >
+                    Personal Details
+                  </Button>
+                  <Button 
+                    variant={activeTab === 'security' ? 'primary' : 'ghost'} 
+                    className="w-full justify-start"
+                    onClick={() => setActiveTab('security')}
+                    leftIcon={<Shield className="w-4 h-4" />}
+                  >
+                    Security
+                  </Button>
+                </div>
+
+                <div className="w-full pt-6 mt-6 border-t border-slate-100 dark:border-slate-800">
+                  <Button 
+                    variant="danger" 
+                    className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10"
+                    onClick={handleLogout}
+                    leftIcon={<LogOut className="w-4 h-4" />}
+                  >
+                    Sign Out
+                  </Button>
+                </div>
+              </Card>
             </div>
-          </Card>
 
-          {/* Tabs */}
-          <div className="flex gap-3 mb-6">
-            <button
-              onClick={() => setActiveTab('profile')}
-              className={`flex-1 py-3 rounded-xl font-medium transition flex items-center justify-center gap-2 ${
-                activeTab === 'profile'
-                  ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20'
-                  : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-700'
-              }`}
-            >
-              <UserIcon className="w-5 h-5" />
-              ข้อมูลส่วนตัว
-            </button>
-            <button
-              onClick={() => setActiveTab('password')}
-              className={`flex-1 py-3 rounded-xl font-medium transition flex items-center justify-center gap-2 ${
-                activeTab === 'password'
-                  ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20'
-                  : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-700'
-              }`}
-            >
-              <LockIcon className="w-5 h-5" />
-              เปลี่ยนรหัสผ่าน
-            </button>
+            {/* Right Column: Settings Forms */}
+            <div className="lg:col-span-8">
+              <AnimatePresence mode="wait">
+                {activeTab === 'details' && (
+                  <motion.div 
+                    key="details"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Card className="p-6 md:p-8">
+                      <div className="flex items-center gap-3 mb-6 pb-6 border-b border-slate-100 dark:border-slate-800">
+                        <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-500">
+                          <User className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Personal Information</h3>
+                          <p className="text-sm text-slate-500 dark:text-slate-400">Update your public profile information</p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">First Name</label>
+                            <Input value={user?.first_name || ''} disabled className="bg-slate-50 dark:bg-slate-900/50 opacity-75" />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Last Name</label>
+                            <Input value={user?.last_name || ''} disabled className="bg-slate-50 dark:bg-slate-900/50 opacity-75" />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Student ID</label>
+                          <Input value={user?.student_id || ''} disabled className="bg-slate-50 dark:bg-slate-900/50 opacity-75 font-mono" />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Nickname</label>
+                          <Input 
+                            placeholder="How should we call you?" 
+                            value={nickname} 
+                            onChange={(e) => setNickname(e.target.value)}
+                          />
+                          <p className="text-xs text-slate-500 mt-2">This is the name KooJai will use to talk to you.</p>
+                        </div>
+
+                        {saveStatus !== 'idle' && (
+                           <div className={`flex items-center gap-2 p-3 rounded-lg text-sm ${saveStatus === 'success' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10' : 'bg-red-50 text-red-600 dark:bg-red-500/10'}`}>
+                             {saveStatus === 'success' ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+                             {saveMessage}
+                           </div>
+                        )}
+
+                        <div className="pt-4 flex justify-end">
+                          <Button 
+                            onClick={handleSaveProfile} 
+                            isLoading={isSaving}
+                            leftIcon={<Save className="w-4 h-4" />}
+                          >
+                            Save Changes
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  </motion.div>
+                )}
+
+                {activeTab === 'security' && (
+                  <motion.div 
+                    key="security"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Card className="p-6 md:p-8">
+                       <div className="flex items-center gap-3 mb-6 pb-6 border-b border-slate-100 dark:border-slate-800">
+                        <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-500">
+                          <Lock className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Security</h3>
+                          <p className="text-sm text-slate-500 dark:text-slate-400">Manage your password and security settings</p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-6 max-w-md">
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Current Password</label>
+                          <Input 
+                            type="password" 
+                            placeholder="Enter current password"
+                            value={oldPassword}
+                            onChange={(e) => setOldPassword(e.target.value)}
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">New Password</label>
+                          <Input 
+                             type="password" 
+                             placeholder="Enter new password"
+                             value={newPassword}
+                             onChange={(e) => setNewPassword(e.target.value)}
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Confirm New Password</label>
+                          <Input 
+                             type="password" 
+                             placeholder="Confirm new password"
+                             value={confirmPassword}
+                             onChange={(e) => setConfirmPassword(e.target.value)}
+                          />
+                        </div>
+
+                        {passwordStatus !== 'idle' && (
+                           <div className={`flex items-center gap-2 p-3 rounded-lg text-sm ${passwordStatus === 'success' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10' : 'bg-red-50 text-red-600 dark:bg-red-500/10'}`}>
+                             {passwordStatus === 'success' ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+                             {passwordMessage}
+                           </div>
+                        )}
+
+                        <div className="pt-4 flex justify-end">
+                           <Button 
+                              onClick={handleChangePassword} 
+                              isLoading={isChangingPassword}
+                              leftIcon={<Lock className="w-4 h-4" />}
+                           >
+                              Update Password
+                           </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
           </div>
-
-          {/* Tab Content */}
-          <Card variant="default" padding="lg">
-            {/* Profile Tab */}
-            {activeTab === 'profile' && (
-              <div className="space-y-5">
-                <Input
-                  label="ชื่อเล่น"
-                  value={nickname}
-                  onChange={(e) => setNickname(e.target.value)}
-                  placeholder="ใส่ชื่อเล่นของคุณ"
-                />
-
-                <Input
-                  label="อีเมล"
-                  value={user?.email || ''}
-                  disabled
-                  className="opacity-60"
-                />
-
-                {saveMessage && (
-                  <div className={`p-4 rounded-xl text-sm flex items-center gap-2 ${
-                    isSuccess 
-                      ? 'bg-green-500/10 text-green-400 border border-green-500/20' 
-                      : 'bg-red-500/10 text-red-400 border border-red-500/20'
-                  }`}>
-                    {isSuccess ? <CheckIcon className="w-5 h-5" /> : <XIcon className="w-5 h-5" />}
-                    {saveMessage}
-                  </div>
-                )}
-
-                <Button
-                  variant="primary"
-                  onClick={handleSaveProfile}
-                  isLoading={isSaving}
-                  leftIcon={<SaveIcon className="w-5 h-5" />}
-                  className="w-full"
-                >
-                  {isSaving ? 'กำลังบันทึก...' : 'บันทึกการเปลี่ยนแปลง'}
-                </Button>
-              </div>
-            )}
-
-            {/* Password Tab */}
-            {activeTab === 'password' && (
-              <div className="space-y-5">
-                <Input
-                  label="รหัสผ่านเดิม"
-                  type="password"
-                  value={oldPassword}
-                  onChange={(e) => setOldPassword(e.target.value)}
-                  leftIcon={<LockIcon className="w-5 h-5" />}
-                />
-
-                <Input
-                  label="รหัสผ่านใหม่"
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  leftIcon={<LockIcon className="w-5 h-5" />}
-                />
-
-                <Input
-                  label="ยืนยันรหัสผ่านใหม่"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  leftIcon={<LockIcon className="w-5 h-5" />}
-                />
-
-                {passwordMessage && (
-                  <div className={`p-4 rounded-xl text-sm flex items-center gap-2 ${
-                    passwordSuccess 
-                      ? 'bg-green-500/10 text-green-400 border border-green-500/20' 
-                      : 'bg-red-500/10 text-red-400 border border-red-500/20'
-                  }`}>
-                    {passwordSuccess ? <CheckIcon className="w-5 h-5" /> : <XIcon className="w-5 h-5" />}
-                    {passwordMessage}
-                  </div>
-                )}
-
-                <Button
-                  variant="primary"
-                  onClick={handleChangePassword}
-                  isLoading={isChangingPassword}
-                  leftIcon={<LockIcon className="w-5 h-5" />}
-                  className="w-full"
-                >
-                  {isChangingPassword ? 'กำลังเปลี่ยน...' : 'เปลี่ยนรหัสผ่าน'}
-                </Button>
-              </div>
-            )}
-          </Card>
-
-          {/* Logout Button */}
-          <Button
-            variant="danger"
-            onClick={handleLogout}
-            leftIcon={<LogOutIcon className="w-5 h-5" />}
-            className="w-full mt-6"
-          >
-            ออกจากระบบ
-          </Button>
         </div>
       </div>
     </AppLayout>
@@ -296,7 +338,7 @@ function ProfileContent() {
 export default function ProfilePage() {
   return (
     <ProtectedRoute allowedUserTypes={['student']}>
-      <ProfileContent />
+       <ProfileContent />
     </ProtectedRoute>
   );
 }

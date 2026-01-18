@@ -46,68 +46,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     return pathname.startsWith(path);
   };
 
-  const SidebarContent = () => (
-    <div className="flex flex-col h-full bg-card border-r border-border backdrop-blur-xl transition-colors duration-300">
-      {/* Branding */}
-      <div className="flex-none p-6 pt-8 flex items-center gap-3">
-        <div className="w-10 h-10 bg-gradient-to-tr from-primary to-blue-400 rounded-xl flex items-center justify-center shadow-lg">
-          <Sparkles className="w-6 h-6 text-white" />
-        </div>
-        <h1 className="text-xl font-bold tracking-tight text-foreground">KooJai</h1>
-        
-        {/* Mobile Close Button */}
-        <button 
-          onClick={() => setIsOpen(false)}
-          className="md:hidden ml-auto p-2 text-muted-foreground hover:text-foreground"
-        >
-          <X className="w-6 h-6" />
-        </button>
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2 overflow-y-auto no-scrollbar">
-        {navItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => handleNavigate(item.id)}
-            className={cn(
-              "w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-200 group relative overflow-hidden",
-              isActive(item.id) 
-                ? "bg-primary text-primary-foreground shadow-md shadow-primary/25 font-semibold" 
-                : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-            )}
-          >
-            <item.icon className={cn("w-6 h-6 transition-transform group-hover:scale-110", isActive(item.id) && "animate-pulse-slow")} />
-            <span className="text-base">{item.label}</span>
-          </button>
-        ))}
-      </nav>
-
-      {/* Footer / User Profile */}
-      <div className="flex-none p-4 m-4 bg-secondary/50 rounded-3xl border border-border/50">
-         <div className="flex items-center gap-3 mb-4 cursor-pointer" onClick={() => router.push('/profile')}>
-            <Avatar name={user?.name || 'User'} className="w-10 h-10 border-2 border-background" />
-            <div className="min-w-0 flex-1">
-                <p className="font-bold text-sm text-foreground truncate">{user?.name || 'Guest'}</p>
-                <p className="text-xs text-muted-foreground truncate opacity-80">Online</p>
-            </div>
-         </div>
-         
-         <div className="flex items-center justify-between gap-2">
-            <ThemeToggle className="bg-background/80 hover:bg-background rounded-xl w-full h-10" />
-            <Button 
-                variant="ghost" 
-                size="sm" 
-                className="w-10 h-10 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive hover:text-white p-0"
-                onClick={logout}
-            >
-                <LogOut className="w-5 h-5" />
-            </Button>
-         </div>
-      </div>
-    </div>
-  );
-
   return (
     <>
       {/* Mobile Overlay */}
@@ -127,32 +65,71 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       <motion.aside
         className={cn(
             "fixed md:relative inset-y-0 left-0 z-50 w-[280px] md:translate-x-0 h-full",
-            "bg-transparent md:block" // Reset backgrounds here as SidebarContent has it
+            "bg-transparent md:block" 
         )}
         initial={false}
         animate={{ x: isOpen ? 0 : '-100%' }}
         transition={{ type: "spring", bounce: 0, duration: 0.3 }}
-        // Desktop override handled by className (md:translate-x-0) but framer motion `animate` might conflict.
-        // Better: apply animations only on mobile? 
-        // Or standard conditional rendering for desktop which doesn't use motion for visibility.
-        // Actually, CSS media query overrides transform usually better.
-        // But motion applies inline styles.
-        // Let's rely on standard logic: desktop checks `md:translate-x-0` if we remove `animate`.
-        // But we need accessible handling.
-        // For simplicity, let's just make sure desktop view `md:translate-x-0` via standard CSS is strong.
-        style={{ x: undefined }} // Let class handle it on desktop?
-        // Okay: We will use `variants`
-        variants={{
-            mobileClosed: { x: '-100%' },
-            mobileOpen: { x: '0%' },
-            desktop: { x: '0%' }
-        }}
-        // However, checking window width in JS for initial state is hydration prone.
-        // Let's use `md:hidden` structure in AppLayout for desktop sidebar, and this one for mobile?
-        // The AppLayout has two sidebars: one desktop block, one mobile.
-        // So this component just needs to render.
       >
-        <SidebarContent />
+        <div className="flex flex-col h-full bg-card border-r border-border backdrop-blur-xl transition-colors duration-300">
+          {/* Branding */}
+          <div className="flex-none p-6 pt-8 flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-tr from-primary to-blue-400 rounded-xl flex items-center justify-center shadow-lg">
+              <Sparkles className="w-6 h-6 text-white" />
+            </div>
+            <h1 className="text-xl font-bold tracking-tight text-foreground">KooJai</h1>
+            
+            {/* Mobile Close Button */}
+            <button 
+              onClick={() => setIsOpen(false)}
+              className="md:hidden ml-auto p-2 text-muted-foreground hover:text-foreground"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          {/* Navigation */}
+          <nav className="flex-1 p-4 space-y-2 overflow-y-auto no-scrollbar">
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => handleNavigate(item.id)}
+                className={cn(
+                  "w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-200 group relative overflow-hidden",
+                  isActive(item.id) 
+                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/25 font-semibold" 
+                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                )}
+              >
+                <item.icon className={cn("w-6 h-6 transition-transform group-hover:scale-110", isActive(item.id) && "animate-pulse-slow")} />
+                <span className="text-base">{item.label}</span>
+              </button>
+            ))}
+          </nav>
+
+          {/* Footer / User Profile */}
+          <div className="flex-none p-4 m-4 bg-secondary/50 rounded-3xl border border-border/50">
+             <div className="flex items-center gap-3 mb-4 cursor-pointer" onClick={() => router.push('/profile')}>
+                <Avatar name={user?.name || 'User'} className="w-10 h-10 border-2 border-background" />
+                <div className="min-w-0 flex-1">
+                    <p className="font-bold text-sm text-foreground truncate">{user?.name || 'Guest'}</p>
+                    <p className="text-xs text-muted-foreground truncate opacity-80">Online</p>
+                </div>
+             </div>
+             
+             <div className="flex items-center justify-between gap-2">
+                <ThemeToggle className="bg-background/80 hover:bg-background rounded-xl w-full h-10" />
+                <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="w-10 h-10 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive hover:text-white p-0"
+                    onClick={logout}
+                >
+                    <LogOut className="w-5 h-5" />
+                </Button>
+             </div>
+          </div>
+        </div>
       </motion.aside>
     </>
   );
