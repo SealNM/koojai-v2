@@ -9,15 +9,15 @@ const sql = neon(process.env.DATABASE_URL!);
 // Helper to get user from session
 async function getUserFromSession() {
   const cookieStore = await cookies();
-  const sessionId = cookieStore.get('session_id')?.value;
+  const token = cookieStore.get('koojai_token')?.value;
   
-  if (!sessionId) return null;
+  if (!token) return null;
   
   const result = await sql`
     SELECT s.*, st.student_id, st.first_name, st.last_name, st.nickname
     FROM sessions s
     JOIN students st ON s.user_id = st.id AND s.user_type = 'student'
-    WHERE s.id = ${sessionId} AND s.expires_at > NOW()
+    WHERE s.token = ${token} AND s.expires_at > NOW()
   `;
   
   return result[0] || null;

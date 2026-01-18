@@ -158,13 +158,41 @@ function CharacterChatPage({ params }: { params: Promise<{ id: string }> }) {
     handleInputResize();
   }, [inputText]);
 
+  // Default system character (KooJai)
+  const DEFAULT_CHARACTER: Character = {
+    id: 'koojai',
+    studentId: 'system',
+    name: 'KooJai (คู่ใจ)',
+    avatar: '✨',
+    personality: 'เป็นมิตร อบอุ่น เข้าใจความรู้สึก',
+    description: 'เพื่อนคู่ใจที่พร้อมรับฟังทุกเรื่องของคุณ ไม่ว่าจะสุขหรือทุกข์ เราอยู่ตรงนี้เสมอ',
+    voiceGender: 'female',
+    voiceName: 'Aoede',
+    systemPrompt: `คุณคือ "คู่ใจ" (KooJai) เพื่อน AI ที่อบอุ่นและเข้าใจ สำหรับนักเรียนไทย
+คุณต้อง:
+- พูดภาษาไทยอย่างเป็นกันเอง ใช้คำลงท้ายที่นุ่มนวล เช่น "นะ" "ค่ะ/ครับ" "น้า"
+- รับฟังอย่างตั้งใจ ไม่ตัดสิน
+- ให้กำลังใจและช่วยคิดหาทางออกในเชิงบวก
+- หากพบสัญญาณความเครียดหนักหรือต้องการความช่วยเหลือพิเศษ แนะนำให้พูดคุยกับผู้ใหญ่ที่ไว้ใจได้`,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  };
+
   // Initialize
   useEffect(() => {
     const init = async () => {
       if (!characterId || !user?.student_id) return;
 
       try {
-        const char = await fetchCharacter(characterId);
+        let char: Character | null = null;
+        
+        // Check if this is the default system character
+        if (characterId === 'koojai') {
+          char = DEFAULT_CHARACTER;
+        } else {
+          char = await fetchCharacter(characterId);
+        }
+        
         if (!char) {
           router.push('/characters');
           return;
