@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import ProtectedRoute from '@/components/ProtectedRoute';
 import { AppLayout } from '@/components/layout';
 import { Card } from '@/components/ui/Card';
 import { Avatar } from '@/components/ui/Avatar';
@@ -128,6 +129,7 @@ export default function ChatHistoryPage() {
   };
 
   return (
+    <ProtectedRoute allowedUserTypes={['student']}>
     <AppLayout>
       <div className="flex-1 overflow-y-auto bg-slate-50 dark:bg-[#0f0d1a] p-4 md:p-8">
         <div className="max-w-4xl mx-auto space-y-6 pb-20">
@@ -229,5 +231,6 @@ export default function ChatHistoryPage() {
         </div>
       </div>
     </AppLayout>
+    </ProtectedRoute>
   );
 }

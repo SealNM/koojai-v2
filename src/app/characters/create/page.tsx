@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import ProtectedRoute from '@/components/ProtectedRoute';
 import { createCharacter } from '@/services/characterService';
 import { AppLayout } from '@/components/layout';
 import { Button, Card, Input, Textarea, Avatar } from '@/components/ui';
@@ -109,6 +110,7 @@ export default function CreateCharacterPage() {
   const prevStep = () => setStep(s => s - 1);
 
   return (
+    <ProtectedRoute allowedUserTypes={['student']}>
     <AppLayout>
       <div className="flex-1 overflow-y-auto bg-background p-4 md:p-8 flex justify-center">
          <div className="w-full max-w-2xl">
@@ -267,5 +269,6 @@ export default function CreateCharacterPage() {
          </div>
       </div>
     </AppLayout>
+    </ProtectedRoute>
   );
 }

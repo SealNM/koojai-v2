@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import ProtectedRoute from '@/components/ProtectedRoute';
 import { Character } from '@/types';
 import { fetchCharacters } from '@/services/characterService';
 import { AppLayout } from '@/components/layout';
@@ -46,6 +47,7 @@ export default function HomePage() {
   };
 
   return (
+    <ProtectedRoute allowedUserTypes={['student']}>
     <AppLayout>
       <div className="flex-1 overflow-y-auto overflow-x-hidden bg-background p-4 md:p-8">
         {/* Full width container to avoid empty left gap on large screens */}
@@ -172,5 +174,6 @@ export default function HomePage() {
         </div>
       </div>
     </AppLayout>
+    </ProtectedRoute>
   );
 }
