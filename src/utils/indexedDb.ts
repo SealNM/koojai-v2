@@ -52,24 +52,38 @@ function openDb(): Promise<IDBDatabase> {
 
 // === Characters ===
 export async function saveCharacter(character: Character): Promise<void> {
+  console.log('saveCharacter called:', character);
   const db = await openDb();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORES.CHARACTERS, 'readwrite');
     tx.objectStore(STORES.CHARACTERS).put(character);
-    tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
+    tx.oncomplete = () => {
+      console.log('saveCharacter success:', character.id);
+      resolve();
+    };
+    tx.onerror = () => {
+      console.error('saveCharacter error:', tx.error);
+      reject(tx.error);
+    };
   });
 }
 
 export async function getCharacters(studentId: string): Promise<Character[]> {
+  console.log('getCharacters called with studentId:', studentId);
   const db = await openDb();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORES.CHARACTERS, 'readonly');
     const store = tx.objectStore(STORES.CHARACTERS);
     const idx = store.index('studentId');
     const req = idx.getAll(IDBKeyRange.only(studentId));
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
+    req.onsuccess = () => {
+      console.log('getCharacters result:', req.result);
+      resolve(req.result);
+    };
+    req.onerror = () => {
+      console.error('getCharacters error:', req.error);
+      reject(req.error);
+    };
   });
 }
 

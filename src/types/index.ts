@@ -148,9 +148,11 @@ export interface AuthUser {
   email: string;
   first_name: string;
   last_name: string;
+  name: string; // Add name property for convenience
   user_type: 'student' | 'teacher';
   // เฉพาะ Student
   student_id?: string;
+
   nickname?: string;
   grade_level?: string;
   classroom?: string;

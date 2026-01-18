@@ -4,274 +4,175 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Character } from '@/types';
-import { getCharacters } from '@/utils/indexedDb';
+import { fetchCharacters } from '@/services/characterService';
 import { AppLayout } from '@/components/layout';
-import { Button, Card, GlassCard, Badge } from '@/components/ui';
-import { 
-  ChatIcon, 
-  MicIcon, 
-  PlusIcon, 
-  SparklesIcon,
-  KooJaiIcon,
-  ChevronRightIcon,
-  UsersIcon,
-} from '@/components/ui/Icons';
+import { Button, Card, Badge, Avatar } from '@/components/ui';
+import { Plus, MessageCircle, Sparkles, User, Mic } from 'lucide-react';
+import { motion } from 'framer-motion';
 
-/**
- * 🎨 Home Page - Modern Dark Theme
- * ดีไซน์แบบ BeeBot/TalkMosaic
- */
-
-// KooJai Hero Card Component
-function KooJaiHeroCard({ onVoiceChat, onTextChat }: { onVoiceChat: () => void; onTextChat: () => void }) {
-  return (
-    <GlassCard gradient className="relative">
-      {/* Floating Sparkle Effects */}
-      <div className="absolute top-4 right-4 w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
-      <div className="absolute top-12 right-12 w-1.5 h-1.5 bg-white/50 dark:bg-white/50 rounded-full animate-pulse delay-300" />
-      
-      <div className="flex items-start gap-5 mb-6">
-        <div className="w-16 h-16 bg-white/30 dark:bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-inner flex-shrink-0">
-          <KooJaiIcon className="w-10 h-10 text-white" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <h2 className="text-2xl font-bold text-white">KooJai</h2>
-            <Badge variant="primary" size="sm">AI</Badge>
-          </div>
-          <p className="text-blue-100 dark:text-blue-200 text-sm">เพื่อนคู่ใจ พร้อมรับฟังทุกเรื่อง</p>
-        </div>
-      </div>
-      
-      <p className="text-white/90 dark:text-white/80 mb-8 leading-relaxed">
-        สวัสดีจ้ะ! วันนี้มีเรื่องอะไรอยากเล่าให้ฟังไหม? เราพร้อมรับฟังทุกเรื่องเสมอ ไม่ว่าจะสุขหรือทุกข์ เราอยู่ตรงนี้เพื่อเธอนะ ✨
-      </p>
-      
-      <div className="flex gap-3">
-        <Button
-          variant="outline"
-          onClick={onTextChat}
-          leftIcon={<ChatIcon className="w-5 h-5" />}
-          className="flex-1 !border-white/20 !text-white hover:!bg-white/10"
-        >
-          พิมพ์คุย
-        </Button>
-        <Button
-          variant="primary"
-          onClick={onVoiceChat}
-          leftIcon={<MicIcon className="w-5 h-5" />}
-          className="flex-1"
-        >
-          พูดคุย
-        </Button>
-      </div>
-    </GlassCard>
-  );
-}
-
-// Character Card Component
-function CharacterCardItem({ character, onClick }: { character: Character; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      className="w-full bg-gray-100 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700/50 rounded-2xl p-5 hover:bg-gray-200 dark:hover:bg-slate-800/70 hover:border-gray-300 dark:hover:border-slate-600 transition-all duration-300 text-left group"
-    >
-      <div className="flex items-center gap-4">
-        <div className="w-14 h-14 bg-gradient-to-br from-blue-500/20 to-blue-600/30 rounded-2xl flex items-center justify-center text-2xl border border-blue-500/20 group-hover:scale-105 transition-transform">
-          {character.avatar}
-        </div>
-        <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors">
-            {character.name}
-          </h3>
-          <p className="text-sm text-gray-500 dark:text-slate-400 truncate">{character.personality}</p>
-        </div>
-        <div className="w-10 h-10 rounded-xl bg-gray-200 dark:bg-slate-700/50 flex items-center justify-center text-gray-400 dark:text-slate-400 group-hover:bg-blue-500/20 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-all">
-          <ChatIcon className="w-5 h-5" />
-        </div>
-      </div>
-    </button>
-  );
-}
-
-// Create Character Card Component
-function CreateCharacterCardItem({ onClick }: { onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      className="w-full bg-gray-50 dark:bg-slate-800/30 border-2 border-dashed border-gray-300 dark:border-slate-700/50 rounded-2xl p-5 hover:border-blue-400 dark:hover:border-blue-500/50 hover:bg-blue-50 dark:hover:bg-blue-600/10 transition-all duration-300 group min-h-[88px] flex items-center justify-center"
-    >
-      <div className="flex flex-col items-center gap-2">
-        <div className="w-12 h-12 bg-gray-200 dark:bg-slate-700/50 rounded-xl flex items-center justify-center text-gray-400 dark:text-slate-400 group-hover:bg-blue-500/20 group-hover:text-blue-500 dark:group-hover:text-blue-400 group-hover:scale-110 transition-all">
-          <PlusIcon className="w-6 h-6" />
-        </div>
-        <span className="text-sm font-medium text-gray-500 dark:text-slate-400 group-hover:text-blue-500 dark:group-hover:text-blue-300 transition-colors">
-          สร้างเพื่อนใหม่
-        </span>
-      </div>
-    </button>
-  );
-}
-
-// Tip Card Component
-function TipCard() {
-  return (
-    <Card variant="glass" padding="md">
-      <div className="flex items-start gap-3">
-        <div className="w-10 h-10 bg-blue-500/10 dark:bg-blue-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
-          <SparklesIcon className="w-5 h-5 text-blue-500" />
-        </div>
-        <div>
-          <h3 className="font-semibold text-gray-900 dark:text-white mb-1">เคล็ดลับวันนี้</h3>
-          <p className="text-gray-600 dark:text-slate-400 text-sm leading-relaxed">
-            การได้ระบายความรู้สึกออกมา คือก้าวแรกของการฮีลใจนะ วันนี้ถ้าเหนื่อย ลองมาคุยกับเราได้เลย
-          </p>
-        </div>
-      </div>
-    </Card>
-  );
-}
-
-function HomePage() {
-  const { isAuthenticated, isLoading, user } = useAuth();
+export default function HomePage() {
   const router = useRouter();
+  const { user } = useAuth();
   const [characters, setCharacters] = useState<Character[]>([]);
-  const [isLoadingChars, setIsLoadingChars] = useState(true);
+  const [loading, setLoading] = useState(true);
 
-  // Redirect if not authenticated or is teacher
   useEffect(() => {
-    if (!isLoading) {
-      if (!isAuthenticated) {
-        router.replace('/login');
-      } else if (user?.user_type === 'teacher') {
-        router.replace('/admin/dashboard');
-      }
-    }
-  }, [isLoading, isAuthenticated, user, router]);
-
-  // Load characters
-  useEffect(() => {
-    const loadCharacters = async () => {
-      // Only load if authenticated and has student_id
-      if (!isLoading && isAuthenticated && user?.student_id) {
-        try {
-          console.log('Loading characters for student:', user.student_id);
-          const chars = await getCharacters(user.student_id);
-          console.log('Loaded characters:', chars);
-          setCharacters(chars);
-        } catch (error) {
-          console.error('Failed to load characters:', error);
-        }
-      }
-      // Always set loading to false after auth is complete
-      if (!isLoading) {
-        setIsLoadingChars(false);
+    const loadData = async () => {
+      try {
+        const data = await fetchCharacters();
+        setCharacters(data);
+      } catch (error) {
+        console.error("Failed to load characters", error);
+      } finally {
+        setLoading(false);
       }
     };
+    loadData();
+  }, []);
 
-    loadCharacters();
-  }, [user, isAuthenticated, isLoading]);
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
 
-  // Show loading while checking auth
-  if (isLoading || !isAuthenticated || user?.user_type === 'teacher') {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[#0f172a]">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-200 dark:border-blue-900 border-t-blue-500 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-500 dark:text-slate-400">กำลังโหลด...</p>
-        </div>
-      </div>
-    );
-  }
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+  };
 
   return (
     <AppLayout>
-      <div className="min-h-screen p-6 lg:p-8">
-        <div className="max-w-6xl mx-auto">
-          
-          {/* Welcome Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              สวัสดี, {user?.nickname || user?.first_name || 'เพื่อน'}! 👋
-            </h1>
-            <p className="text-gray-600 dark:text-slate-400 text-lg">
-              เลือกเพื่อนคุยที่ถูกใจ แล้วเริ่มบทสนทนาได้เลย
-            </p>
-          </div>
-        
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            
-            {/* Left Column: KooJai Hero + Tips */}
-            <div className="lg:col-span-5 space-y-6">
-              <KooJaiHeroCard 
-                onVoiceChat={() => router.push('/chat')} 
-                onTextChat={() => router.push('/chat?mode=text')}
-              />
-              
-              <div className="hidden lg:block">
-                <TipCard />
-              </div>
-            </div>
-
-            {/* Right Column: Characters */}
-            <div className="lg:col-span-7">
-              <Card variant="default" padding="lg">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-500/15 dark:bg-blue-600/20 rounded-xl flex items-center justify-center">
-                      <UsersIcon className="w-5 h-5 text-blue-500" />
-                    </div>
-                    <div>
-                      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">คาแรกเตอร์ของฉัน</h2>
-                      <p className="text-sm text-gray-500 dark:text-slate-500">สร้างและพูดคุยกับเพื่อน AI</p>
-                    </div>
-                  </div>
-                  {characters.length > 0 && (
-                    <Badge variant="info">{characters.length} เพื่อน</Badge>
-                  )}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden bg-background p-4 md:p-8">
+        <div className="max-w-6xl mx-auto space-y-8 pb-10">
+            {/* Header */}
+            <motion.div 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex flex-col md:flex-row md:items-end justify-between gap-4"
+            >
+                <div>
+                   <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2 flex items-center gap-2">
+                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600">
+                        สวัสดี, {user?.name || 'เพื่อน'}!
+                    </span> 
+                    👋
+                   </h1>
+                   <p className="text-muted-foreground text-lg">
+                    วันนี้อยากคุยกับใครดี?
+                   </p>
                 </div>
+                <Button onClick={() => router.push('/characters/create')} leftIcon={<Plus className="w-5 h-5"/>} className="shadow-lg shadow-primary/20">
+                    สร้างเพื่อนใหม่
+                </Button>
+            </motion.div>
 
-                {isLoadingChars ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {[1, 2, 3, 4].map(i => (
-                      <div key={i} className="h-24 bg-gray-200 dark:bg-slate-800/50 rounded-2xl skeleton"></div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {characters.map((char) => (
-                      <CharacterCardItem
-                        key={char.id}
-                        character={char}
-                        onClick={() => router.push(`/characters/${char.id}/chat`)}
-                      />
-                    ))}
-                    
-                    <CreateCharacterCardItem onClick={() => router.push('/characters/create')} />
-                  </div>
-                )}
+            {/* Grid */}
+            <motion.div 
+                variants={container}
+                initial="hidden"
+                animate="show"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6"
+            >
+                {/* KooJai Special Card - Takes full width on mobile, half on desktop, large on large */}
+                <motion.div variants={item} className="md:col-span-2 lg:col-span-8">
+                    <Card variant="gradient" className="h-full p-8 relative overflow-hidden group border border-primary/10">
+                         {/* Decor */}
+                         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-primary/30 transition-colors duration-500" />
+                         
+                         <div className="relative z-10 flex flex-col md:flex-row gap-6 items-start md:items-center h-full">
+                            <div className="w-24 h-24 bg-background/40 backdrop-blur-md rounded-[2rem] flex items-center justify-center shadow-lg border border-white/20 shrink-0">
+                                <Sparkles className="w-12 h-12 text-primary" />
+                            </div>
+                            <div className="flex-1 space-y-3">
+                                <div className="flex items-center gap-3">
+                                    <h2 className="text-2xl font-bold text-foreground">KooJai (คู่ใจ)</h2>
+                                    <Badge variant="primary" className="text-xs">Official AI</Badge>
+                                </div>
+                                <p className="text-foreground/80 leading-relaxed text-lg">
+                                    เพื่อนคู่ใจที่พร้อมรับฟังทุกเรื่องของคุณ ไม่ว่าจะสุขหรือทุกข์ เราอยู่ตรงนี้เสมอ
+                                </p>
+                                <div className="flex flex-wrap gap-3 pt-2">
+                                    <Button 
+                                        variant="primary" 
+                                        onClick={() => router.push('/characters/koojai/chat')} 
+                                        leftIcon={<MessageCircle className="w-5 h-5"/>}
+                                    >
+                                        คุยเลย
+                                    </Button>
+                                    <Button 
+                                        variant="secondary" 
+                                        onClick={() => router.push('/characters/koojai/chat?mode=voice')} 
+                                        leftIcon={<Mic className="w-5 h-5"/>}
+                                    >
+                                        คุยเสียง
+                                    </Button>
+                                </div>
+                            </div>
+                         </div>
+                    </Card>
+                </motion.div>
 
-                {characters.length > 0 && (
-                  <button 
-                    onClick={() => router.push('/characters')}
-                    className="w-full mt-6 py-3 text-center text-sm text-gray-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors flex items-center justify-center gap-2 group"
-                  >
-                    <span>ดูทั้งหมด</span>
-                    <ChevronRightIcon className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </button>
-                )}
-              </Card>
+                {/* Create New - Visible as a card too for visibility */}
+                <motion.div variants={item} className="md:col-span-1 lg:col-span-4 lg:row-span-2">
+                   {/* We could put something else here, or just let characters flow. 
+                       Let's put the first user character here if exists, else "Create New" big card.
+                   */}
+                   {characters.length === 0 ? (
+                        <button 
+                            onClick={() => router.push('/characters/create')}
+                            className="w-full h-full min-h-[200px] rounded-3xl border-2 border-dashed border-border hover:border-primary hover:bg-secondary/50 transition-all flex flex-col items-center justify-center gap-4 group text-muted-foreground hover:text-primary bg-card/50"
+                        >
+                            <div className="w-20 h-20 rounded-full bg-secondary group-hover:bg-primary/10 flex items-center justify-center transition-colors shadow-sm">
+                                <Plus className="w-8 h-8" />
+                            </div>
+                            <span className="font-medium text-lg">สร้างตัวละครแรกของคุณ</span>
+                        </button>
+                   ) : (
+                        <Card className="h-full flex flex-col items-center justify-center p-8 bg-secondary/20 border-dashed border-2 border-border hover:border-primary/50 cursor-pointer group transition-colors" onClick={() => router.push('/characters/create')}>
+                            <div className="w-16 h-16 rounded-full bg-background flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                                <Plus className="w-8 h-8 text-primary" />
+                            </div>
+                             <h3 className="font-bold text-lg text-foreground">สร้างเพื่อนใหม่</h3>
+                        </Card>
+                   )}
+                </motion.div>
 
-              {/* Mobile Tip */}
-              <div className="lg:hidden mt-6">
-                <TipCard />
-              </div>
-            </div>
-          </div>
+                {/* Character List */}
+                {characters.map((char) => (
+                    <motion.div key={char.id} variants={item} className="md:col-span-1 lg:col-span-4">
+                        <Card className="h-full flex flex-col hover:border-primary/50 hover:shadow-xl transition-all cursor-pointer group bg-card hover:-translate-y-1 duration-300" onClick={() => router.push(`/characters/${char.id}/chat`)}>
+                            <div className="p-6 flex-1 flex flex-col items-center text-center gap-4">
+                                <div className="relative">
+                                     <div className="text-4xl w-24 h-24 bg-gradient-to-br from-secondary to-background rounded-full flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform border-4 border-background">
+                                        {char.avatar}
+                                     </div>
+                                     <div className="absolute bottom-0 right-0 w-6 h-6 bg-green-500 border-4 border-background rounded-full"></div>
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-xl text-foreground group-hover:text-primary transition-colors">{char.name}</h3>
+                                    <Badge variant="default" className="mt-2 text-[10px] opacity-70">{char.personality || 'Friendly'}</Badge>
+                                </div>
+                                <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+                                    {char.description || "พร้อมคุยกับคุณทุกเรื่อง"}
+                                </p>
+                            </div>
+                            <div className="p-4 border-t border-border/50 bg-secondary/30 mt-auto">
+                                <Button variant="ghost" fullWidth size="sm" className="text-primary hover:bg-white hover:text-primary dark:hover:bg-primary/20">
+                                    ทักทายเลย
+                                </Button>
+                            </div>
+                        </Card>
+                    </motion.div>
+                ))}
+
+            </motion.div>
         </div>
       </div>
     </AppLayout>
   );
 }
-
-export default HomePage;

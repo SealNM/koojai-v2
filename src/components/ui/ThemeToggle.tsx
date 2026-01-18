@@ -1,108 +1,43 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { useTheme } from '@/contexts/ThemeContext';
-import { SunIcon, MoonIcon } from './Icons';
+import { useTheme } from 'next-themes';
+import { Sun, Moon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface ThemeToggleProps {
-  size?: 'sm' | 'md' | 'lg';
-  showLabel?: boolean;
   className?: string;
 }
 
 export const ThemeToggle: React.FC<ThemeToggleProps> = ({
-  size = 'md',
-  showLabel = false,
   className = '',
 }) => {
-  const { resolvedTheme, toggleTheme } = useTheme();
-  const isDark = resolvedTheme === 'dark';
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-  const sizeStyles = {
-    sm: 'w-12 h-7',
-    md: 'w-14 h-8',
-    lg: 'w-16 h-9',
-  };
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  const dotSizes = {
-    sm: 'w-5 h-5',
-    md: 'w-6 h-6',
-    lg: 'w-7 h-7',
-  };
-
-  const translateAmounts = {
-    sm: 20,
-    md: 24,
-    lg: 28,
-  };
-
-  return (
-    <div className={`flex items-center gap-3 ${className}`}>
-      {showLabel && (
-        <span className="text-sm font-medium text-slate-600 dark:text-brand-gray">
-          {isDark ? 'Dark' : 'Light'}
-        </span>
-      )}
-      <button
-        onClick={toggleTheme}
-        className={`
-          ${sizeStyles[size]}
-          relative rounded-full transition-colors duration-300
-          ${isDark ? 'bg-brand-purple' : 'bg-slate-300'}
-        `}
-        aria-label="Toggle theme"
-      >
-        <motion.div
-          animate={{ x: isDark ? translateAmounts[size] : 2 }}
-          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-          className={`
-            ${dotSizes[size]}
-            absolute top-1 left-0
-            bg-white rounded-full shadow-md
-            flex items-center justify-center
-          `}
-        >
-          {isDark ? (
-            <MoonIcon className="w-3.5 h-3.5 text-brand-purple" />
-          ) : (
-            <SunIcon className="w-3.5 h-3.5 text-orange-500" />
-          )}
-        </motion.div>
-      </button>
-    </div>
-  );
-};
-
-// Simple Icon Toggle (for header/navbar)
-export const ThemeIconToggle: React.FC<{ className?: string }> = ({ className = '' }) => {
-  const { resolvedTheme, toggleTheme } = useTheme();
-  const isDark = resolvedTheme === 'dark';
+  if (!mounted) {
+    return <div className={cn("w-9 h-9", className)} />; // Placeholder to avoid hydration mismatch
+  }
 
   return (
     <motion.button
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      onClick={toggleTheme}
-      className={`
-        w-10 h-10 rounded-full 
-        flex items-center justify-center 
-        transition-colors duration-200
-        ${isDark 
-          ? 'bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/30' 
-          : 'bg-orange-500/20 text-orange-500 hover:bg-orange-500/30'
-        }
-        ${className}
-      `}
+      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+      className={cn(
+        "relative p-2 rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors",
+        className
+      )}
       aria-label="Toggle theme"
     >
-      {isDark ? (
-        <MoonIcon className="w-5 h-5" />
-      ) : (
-        <SunIcon className="w-5 h-5" />
-      )}
+      <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+      <Moon className="absolute top-2 left-2 h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+      <span className="sr-only">Toggle theme</span>
     </motion.button>
   );
 };
-
-export default ThemeToggle;

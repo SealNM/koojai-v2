@@ -55,6 +55,7 @@ export const authService = {
         email: student.email,
         first_name: student.first_name,
         last_name: student.last_name,
+        name: student.nickname || student.first_name,
         user_type: 'student',
         student_id: student.student_id,
         nickname: student.nickname,
@@ -105,6 +106,7 @@ export const authService = {
         email: teacher.email,
         first_name: teacher.first_name,
         last_name: teacher.last_name,
+        name: teacher.first_name,
         user_type: 'teacher',
         role: teacher.role,
       };
@@ -170,6 +172,7 @@ export const authService = {
           email: student.email as string,
           first_name: student.first_name as string,
           last_name: student.last_name as string,
+          name: (student.nickname || student.first_name) as string,
           user_type: 'student',
           student_id: student.student_id as string,
           nickname: student.nickname as string | undefined,
@@ -187,6 +190,7 @@ export const authService = {
           email: teacher.email as string,
           first_name: teacher.first_name as string,
           last_name: teacher.last_name as string,
+          name: teacher.first_name as string,
           user_type: 'teacher',
           role: teacher.role as AuthUser['role'],
         };

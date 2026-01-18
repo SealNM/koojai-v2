@@ -1,6 +1,8 @@
 'use client';
 
 import React, { forwardRef } from 'react';
+import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   leftIcon?: React.ReactNode;
@@ -15,58 +17,62 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
   error,
   label,
   className = '',
+  disabled,
   ...props
 }, ref) => {
   return (
-    <div className="w-full">
+    <div className="w-full space-y-2">
       {label && (
-        <label className="block text-sm font-medium text-slate-600 dark:text-brand-gray mb-2">
+        <label className="block text-sm font-medium text-foreground mb-1">
           {label}
         </label>
       )}
-      <div className={`
-        bg-white dark:bg-brand-surface 
-        border ${error ? 'border-red-500' : 'border-slate-200 dark:border-white/10'} 
-        rounded-2xl p-1 
-        focus-within:border-brand-purple 
-        transition-colors 
-        shadow-sm
-      `}>
-        <div className="flex items-center px-4">
-          {leftIcon && (
-            <span className="text-slate-400 dark:text-brand-gray mr-3 shrink-0">
-              {leftIcon}
-            </span>
+      <div className={cn(
+        "relative flex items-center transition-all duration-200",
+        "bg-secondary/50 focus-within:bg-background",
+        "border border-transparent focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/10",
+        "rounded-2xl overflow-hidden",
+        error && "border-destructive focus-within:border-destructive/50 focus-within:ring-destructive/10",
+        disabled && "opacity-50 cursor-not-allowed"
+      )}>
+        {leftIcon && (
+          <div className="pl-4 text-muted-foreground flex items-center justify-center pointer-events-none">
+            {leftIcon}
+          </div>
+        )}
+        <input
+          ref={ref}
+          className={cn(
+            "w-full bg-transparent p-4 text-foreground placeholder:text-muted-foreground focus:outline-none",
+            leftIcon ? "pl-3" : "",
+            rightIcon ? "pr-3" : "",
+            className
           )}
-          <input
-            ref={ref}
-            className={`
-              w-full bg-transparent py-3 
-              text-slate-900 dark:text-white 
-              placeholder:text-slate-400 dark:placeholder:text-brand-gray/50 
-              focus:outline-none font-medium
-              ${className}
-            `}
-            {...props}
-          />
-          {rightIcon && (
-            <span className="text-slate-400 dark:text-brand-gray ml-3 shrink-0">
-              {rightIcon}
-            </span>
-          )}
-        </div>
+          disabled={disabled}
+          {...props}
+        />
+        {rightIcon && (
+          <div className="pr-4 text-muted-foreground flex items-center justify-center">
+            {rightIcon}
+          </div>
+        )}
       </div>
       {error && (
-        <p className="mt-1 text-sm text-red-500">{error}</p>
+        <motion.p 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-xs text-destructive font-medium pl-1"
+        >
+          {error}
+        </motion.p>
       )}
     </div>
   );
 });
 
-Input.displayName = 'Input';
+Input.displayName = "Input";
 
-// Textarea variant
-interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   error?: string;
   label?: string;
 }
@@ -75,42 +81,41 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
   error,
   label,
   className = '',
+  disabled,
   ...props
 }, ref) => {
   return (
-    <div className="w-full">
+    <div className="w-full space-y-2">
       {label && (
-        <label className="block text-sm font-medium text-slate-600 dark:text-brand-gray mb-2">
+        <label className="block text-sm font-medium text-foreground mb-1">
           {label}
         </label>
       )}
-      <div className={`
-        bg-white dark:bg-brand-surface 
-        border ${error ? 'border-red-500' : 'border-slate-200 dark:border-white/10'} 
-        rounded-2xl 
-        focus-within:border-brand-purple 
-        transition-colors 
-        shadow-sm
-      `}>
-        <textarea
-          ref={ref}
-          className={`
-            w-full bg-transparent p-4
-            text-slate-900 dark:text-white 
-            placeholder:text-slate-400 dark:placeholder:text-brand-gray/50 
-            focus:outline-none font-medium resize-none
-            ${className}
-          `}
-          {...props}
-        />
-      </div>
+      <textarea
+        ref={ref}
+        className={cn(
+          "w-full bg-secondary/50 p-4 text-foreground placeholder:text-muted-foreground",
+          "border border-transparent focus:border-primary/50 focus:ring-4 focus:ring-primary/10",
+          "rounded-2xl resize-y min-h-[100px] focus:outline-none transition-all duration-200",
+           error && "border-destructive focus:border-destructive/50 focus:ring-destructive/10",
+          disabled && "opacity-50 cursor-not-allowed",
+          className
+        )}
+        disabled={disabled}
+        {...props}
+      />
       {error && (
-        <p className="mt-1 text-sm text-red-500">{error}</p>
+         <motion.p 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-xs text-destructive font-medium pl-1"
+        >
+          {error}
+        </motion.p>
       )}
     </div>
   );
 });
 
-Textarea.displayName = 'Textarea';
+Textarea.displayName = "Textarea";
 
-export default Input;

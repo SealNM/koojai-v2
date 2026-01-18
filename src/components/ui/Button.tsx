@@ -2,6 +2,8 @@
 
 import React from 'react';
 import { motion, HTMLMotionProps } from 'framer-motion';
+import { Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
@@ -25,7 +27,7 @@ export const Button: React.FC<ButtonProps> = ({
   disabled,
   ...props 
 }) => {
-  const baseStyle = "relative inline-flex items-center justify-center gap-2 font-semibold rounded-full transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed";
+  const baseStyle = "relative inline-flex items-center justify-center gap-2 font-semibold rounded-full transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform";
   
   const sizeStyles = {
     sm: "px-4 py-2 text-sm",
@@ -35,32 +37,25 @@ export const Button: React.FC<ButtonProps> = ({
   };
   
   const variants = {
-    primary: "bg-brand-purple text-white hover:bg-brand-lime shadow-lg shadow-brand-purple/25 btn-glow",
-    secondary: "bg-white dark:bg-brand-surface text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/10 shadow-sm",
-    outline: "border-2 border-brand-purple text-brand-purple hover:bg-brand-purple hover:text-white",
-    ghost: "text-slate-600 dark:text-brand-gray hover:text-brand-purple dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5",
-    danger: "bg-red-500 text-white hover:bg-red-600 shadow-lg shadow-red-500/25",
+    primary: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_rgba(14,165,233,0.3)] hover:shadow-[0_0_25px_rgba(14,165,233,0.5)] border border-transparent",
+    secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-slate-200 dark:border-white/10 shadow-sm",
+    outline: "bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground",
+    ghost: "bg-transparent text-muted-foreground hover:text-primary hover:bg-primary/10",
+    danger: "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-lg shadow-destructive/25",
   };
 
   return (
     <motion.button 
       whileHover={{ scale: disabled || isLoading ? 1 : 1.02 }}
       whileTap={{ scale: disabled || isLoading ? 1 : 0.98 }}
-      className={`${baseStyle} ${sizeStyles[size]} ${variants[variant]} ${fullWidth ? 'w-full' : ''} ${className}`}
+      className={cn(baseStyle, sizeStyles[size], variants[variant], fullWidth && 'w-full', className)}
       disabled={disabled || isLoading}
       {...props}
     >
-      {isLoading ? (
-        <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-      ) : (
-        <>
-          {leftIcon && <span className="shrink-0">{leftIcon}</span>}
-          {children}
-          {rightIcon && <span className="shrink-0">{rightIcon}</span>}
-        </>
-      )}
+      {isLoading && <Loader2 className="w-5 h-5 animate-spin" />}
+      {!isLoading && leftIcon}
+      {children}
+      {!isLoading && rightIcon}
     </motion.button>
   );
 };
-
-export default Button;
