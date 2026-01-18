@@ -124,8 +124,8 @@ function ProfileContent() {
         <div className="max-w-4xl mx-auto pb-20">
           
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">My Profile</h1>
-            <p className="text-slate-500 dark:text-slate-400">Manage your account settings and preferences</p>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">โปรไฟล์ของฉัน</h1>
+            <p className="text-slate-500 dark:text-slate-400">จัดการบัญชีและการตั้งค่าของคุณ</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -148,10 +148,10 @@ function ProfileContent() {
                   {user?.first_name} {user?.last_name}
                 </h2>
                 <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">
-                  Student ID: {user?.student_id}
+                  รหัสนักเรียน: {user?.student_id}
                 </p>
                 
-                <Badge variant="primary" className="mb-6">Student</Badge>
+                <Badge variant="primary" className="mb-6">นักเรียน</Badge>
                 
                 <div className="w-full space-y-2">
                   <Button 
@@ -160,7 +160,7 @@ function ProfileContent() {
                     onClick={() => setActiveTab('details')}
                     leftIcon={<User className="w-4 h-4" />}
                   >
-                    Personal Details
+                    ข้อมูลส่วนตัว
                   </Button>
                   <Button 
                     variant={activeTab === 'security' ? 'primary' : 'ghost'} 
@@ -168,7 +168,7 @@ function ProfileContent() {
                     onClick={() => setActiveTab('security')}
                     leftIcon={<Shield className="w-4 h-4" />}
                   >
-                    Security
+                    ความปลอดภัย
                   </Button>
                 </div>
 
@@ -179,7 +179,7 @@ function ProfileContent() {
                     onClick={handleLogout}
                     leftIcon={<LogOut className="w-4 h-4" />}
                   >
-                    Sign Out
+                    ออกจากระบบ
                   </Button>
                 </div>
               </Card>
@@ -202,36 +202,36 @@ function ProfileContent() {
                           <User className="w-6 h-6" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Personal Information</h3>
-                          <p className="text-sm text-slate-500 dark:text-slate-400">Update your public profile information</p>
+                          <h3 className="text-lg font-bold text-slate-900 dark:text-white">ข้อมูลส่วนตัว</h3>
+                          <p className="text-sm text-slate-500 dark:text-slate-400">อัปเดตข้อมูลโปรไฟล์สาธารณะของคุณ</p>
                         </div>
                       </div>
 
                       <div className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">First Name</label>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">ชื่อจริง</label>
                             <Input value={user?.first_name || ''} disabled className="bg-slate-50 dark:bg-slate-900/50 opacity-75" />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Last Name</label>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">นามสกุล</label>
                             <Input value={user?.last_name || ''} disabled className="bg-slate-50 dark:bg-slate-900/50 opacity-75" />
                           </div>
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Student ID</label>
+                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">รหัสนักเรียน</label>
                           <Input value={user?.student_id || ''} disabled className="bg-slate-50 dark:bg-slate-900/50 opacity-75 font-mono" />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Nickname</label>
+                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">ชื่อเล่น</label>
                           <Input 
-                            placeholder="How should we call you?" 
+                            placeholder="คุณอยากให้เรียกว่าอะไร?" 
                             value={nickname} 
                             onChange={(e) => setNickname(e.target.value)}
                           />
-                          <p className="text-xs text-slate-500 mt-2">This is the name KooJai will use to talk to you.</p>
+                          <p className="text-xs text-slate-500 mt-2">นี่คือชื่อที่ KooJai จะใช้เรียกคุณ</p>
                         </div>
 
                         {saveStatus !== 'idle' && (
@@ -247,7 +247,7 @@ function ProfileContent() {
                             isLoading={isSaving}
                             leftIcon={<Save className="w-4 h-4" />}
                           >
-                            Save Changes
+                            บันทึกการเปลี่ยนแปลง
                           </Button>
                         </div>
                       </div>
@@ -269,37 +269,37 @@ function ProfileContent() {
                           <Lock className="w-6 h-6" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Security</h3>
-                          <p className="text-sm text-slate-500 dark:text-slate-400">Manage your password and security settings</p>
+                          <h3 className="text-lg font-bold text-slate-900 dark:text-white">ความปลอดภัย</h3>
+                          <p className="text-sm text-slate-500 dark:text-slate-400">จัดการรหัสผ่านและการตั้งค่าความปลอดภัย</p>
                         </div>
                       </div>
 
                       <div className="space-y-6 max-w-md">
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Current Password</label>
+                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">รหัสผ่านปัจจุบัน</label>
                           <Input 
                             type="password" 
-                            placeholder="Enter current password"
+                            placeholder="กรอกรหัสผ่านปัจจุบัน"
                             value={oldPassword}
                             onChange={(e) => setOldPassword(e.target.value)}
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">New Password</label>
+                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">รหัสผ่านใหม่</label>
                           <Input 
                              type="password" 
-                             placeholder="Enter new password"
+                             placeholder="กรอกรหัสผ่านใหม่"
                              value={newPassword}
                              onChange={(e) => setNewPassword(e.target.value)}
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Confirm New Password</label>
+                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">ยืนยันรหัสผ่านใหม่</label>
                           <Input 
                              type="password" 
-                             placeholder="Confirm new password"
+                             placeholder="กรอกรหัสผ่านใหม่อีกครั้ง"
                              value={confirmPassword}
                              onChange={(e) => setConfirmPassword(e.target.value)}
                           />
@@ -318,7 +318,7 @@ function ProfileContent() {
                               isLoading={isChangingPassword}
                               leftIcon={<Lock className="w-4 h-4" />}
                            >
-                              Update Password
+                              เปลี่ยนรหัสผ่าน
                            </Button>
                         </div>
                       </div>

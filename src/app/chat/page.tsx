@@ -138,10 +138,10 @@ export default function ChatHistoryPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-                Chat History
+                ประวัติการสนทนา
               </h1>
               <p className="text-slate-500 dark:text-slate-400">
-                Your past conversations
+                ดูประวัติการคุยที่ผ่านมา
               </p>
             </div>
             
@@ -150,7 +150,7 @@ export default function ChatHistoryPage() {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input 
                     type="text"
-                    placeholder="Search messages..."
+                    placeholder="ค้นหาข้อความ..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-9 pr-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full md:w-64 text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-500"
@@ -167,14 +167,14 @@ export default function ChatHistoryPage() {
           ) : filteredChats.length === 0 ? (
              <div className="text-center py-20 opacity-70">
                 <MessageCircle className="w-16 h-16 mx-auto text-slate-300 mb-4" />
-                <p className="text-lg font-medium text-slate-600 dark:text-slate-400">No chats found</p>
-                <p className="text-slate-500 text-sm mb-6">Start talking to someone!</p>
+                <p className="text-lg font-medium text-slate-600 dark:text-slate-400">ไม่พบประวัติการสนทนา</p>
+                <p className="text-slate-500 text-sm mb-6">ลองเริ่มคุยกับเพื่อนใหม่สิ!</p>
                 <Button 
                     variant="primary" 
                     onClick={() => router.push('/')}
                     leftIcon={<Plus className="w-4 h-4" />}
                 >
-                    New Chat
+                    เริ่มแชทใหม่
                 </Button>
              </div>
           ) : (

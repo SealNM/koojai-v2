@@ -54,19 +54,17 @@ function ChatBubble({
       className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}
     >
       {!isUser && (
-        <Avatar 
-          src={avatar} 
-          name="AI" 
-          className="mr-3 w-8 h-8 md:w-10 md:h-10 border border-border" 
-        />
+        <div className="mr-3 w-9 h-9 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-primary/20 to-secondary flex items-center justify-center text-xl md:text-2xl border border-border shadow-sm">
+          {avatar || '🤖'}
+        </div>
       )}
       
       <div
         className={cn(
-          "max-w-[85%] md:max-w-[70%] px-5 py-3 rounded-2xl text-sm md:text-base leading-relaxed whitespace-pre-wrap shadow-sm",
+          "max-w-[85%] md:max-w-[70%] px-4 py-3 rounded-2xl text-sm md:text-base leading-relaxed whitespace-pre-wrap shadow-sm",
           isUser
-            ? "bg-primary text-primary-foreground rounded-br-none"
-            : "bg-card text-card-foreground border border-border rounded-bl-none"
+            ? "bg-primary text-primary-foreground rounded-br-sm"
+            : "bg-white dark:bg-card text-slate-800 dark:text-card-foreground border border-slate-200 dark:border-border rounded-bl-sm"
         )}
       >
         <p>
@@ -477,10 +475,10 @@ ${contextSection}
                 {mode === 'voice' ? (
                    <>
                      <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
-                     Voice Mode
+                     โหมดเสียง
                    </>
                 ) : (
-                    "Online"
+                    "ออนไลน์"
                 )}
               </p>
             </div>
@@ -498,13 +496,13 @@ ${contextSection}
             >
               {mode === 'text' ? (
                 <>
-                  <Mic className="w-4 h-4" />
-                  <span className="hidden sm:inline">Voice Call</span>
+                  <Phone className="w-4 h-4" />
+                  <span className="hidden sm:inline">คุยเสียง</span>
                 </>
               ) : (
                 <>
                   <MessageCircle className="w-4 h-4" />
-                  <span className="hidden sm:inline">Text Chat</span>
+                  <span className="hidden sm:inline">พิมพ์ข้อความ</span>
                 </>
               )}
             </Button>
@@ -517,14 +515,13 @@ ${contextSection}
             <main className="flex-1 overflow-y-auto p-4 scroll-smooth">
                <div className="max-w-2xl mx-auto space-y-6">
                 {messages.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-20 text-center opacity-60">
-                    <Avatar 
-                        src={character.avatar} 
-                        className="w-24 h-24 mb-6 opacity-80" 
-                    />
-                    <h3 className="text-xl font-medium mb-2">Start chatting with {character.name}</h3>
+                  <div className="flex flex-col items-center justify-center py-20 text-center">
+                    <div className="w-24 h-24 mb-6 rounded-full bg-gradient-to-br from-primary/20 to-secondary flex items-center justify-center text-5xl shadow-lg">
+                      {character.avatar || '✨'}
+                    </div>
+                    <h3 className="text-xl font-semibold text-foreground mb-2">เริ่มคุยกับ {character.name}</h3>
                     <p className="text-sm text-muted-foreground max-w-xs">
-                        {character.systemPrompt || "I'm ready to listen and help you with anything."}
+                        พร้อมรับฟังทุกเรื่องของคุณ 💜
                     </p>
                   </div>
                 ) : (
@@ -543,11 +540,13 @@ ${contextSection}
                     animate={{ opacity: 1 }}
                     className="flex justify-start mb-4"
                   >
-                    <Avatar src={character.avatar} className="mr-3 w-8 h-8 md:w-10 md:h-10 border border-border" />
-                    <div className="bg-card text-card-foreground border border-border px-5 py-3 rounded-2xl rounded-bl-none flex gap-1 items-center">
-                      <div className="w-2 h-2 bg-primary/50 rounded-full animate-bounce" />
-                      <div className="w-2 h-2 bg-primary/50 rounded-full animate-bounce [animation-delay:0.2s]" />
-                      <div className="w-2 h-2 bg-primary/50 rounded-full animate-bounce [animation-delay:0.4s]" />
+                    <div className="mr-3 w-9 h-9 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-primary/20 to-secondary flex items-center justify-center text-xl md:text-2xl border border-border shadow-sm">
+                      {character.avatar || '🤖'}
+                    </div>
+                    <div className="bg-white dark:bg-card text-card-foreground border border-slate-200 dark:border-border px-5 py-3 rounded-2xl rounded-bl-sm flex gap-1.5 items-center">
+                      <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" />
+                      <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce [animation-delay:0.15s]" />
+                      <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce [animation-delay:0.3s]" />
                     </div>
                   </motion.div>
                 )}
@@ -564,9 +563,9 @@ ${contextSection}
                      value={inputText}
                      onChange={(e) => setInputText(e.target.value)}
                      onKeyDown={handleKeyPress}
-                     placeholder="Type a message..."
+                     placeholder="พิมพ์ข้อความ..."
                      rows={1}
-                     className="flex w-full rounded-2xl border border-input bg-card px-4 py-3 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-none overflow-hidden min-h-[50px] max-h-[150px]"
+                     className="flex w-full rounded-2xl border border-slate-200 dark:border-input bg-white dark:bg-card px-4 py-3 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-50 resize-none overflow-hidden min-h-[50px] max-h-[150px] text-slate-800 dark:text-foreground"
                      disabled={isSending}
                   />
                 </div>
@@ -585,102 +584,149 @@ ${contextSection}
 
         {/* Voice Mode */}
         {mode === 'voice' && (
-          <main className="flex-1 flex flex-col relative overflow-hidden bg-gradient-to-b from-background to-secondary/30">
-            {/* Background Effects */}
-            <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-[100px]" />
-                <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-purple-500/5 rounded-full blur-[100px]" />
+          <main className="flex-1 flex flex-col relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-100 dark:from-[#0f0d1a] dark:via-[#1a1625] dark:to-[#0f0d1a]">
+            {/* Animated Background */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute top-1/4 -left-20 w-80 h-80 bg-gradient-to-br from-violet-500/20 to-purple-500/10 rounded-full blur-[100px] animate-pulse" />
+                <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-gradient-to-br from-blue-500/20 to-cyan-500/10 rounded-full blur-[100px] animate-pulse [animation-delay:1s]" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-[80px]" />
             </div>
 
             <div className="flex-1 flex flex-col items-center justify-center p-6 z-10">
                {!isConnected ? (
-                 <div className="text-center space-y-8 animate-in fade-in zoom-in duration-500">
+                 <motion.div 
+                   initial={{ opacity: 0, scale: 0.9 }}
+                   animate={{ opacity: 1, scale: 1 }}
+                   className="text-center space-y-8"
+                 >
+                    {/* Avatar with glow */}
                     <div className="relative inline-block">
-                        <Avatar src={character.avatar} className="w-32 h-32 md:w-40 md:h-40 border-4 border-background shadow-2xl" />
-                        <div className="absolute -bottom-2 -right-2 bg-green-500 w-8 h-8 rounded-full border-4 border-background" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-purple-600 rounded-full blur-2xl opacity-30 scale-110" />
+                        <div className="relative w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-br from-slate-100 to-white dark:from-slate-800 dark:to-slate-900 flex items-center justify-center text-6xl md:text-7xl border-4 border-white dark:border-slate-700 shadow-2xl">
+                          {character.avatar || '✨'}
+                        </div>
+                        <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-gradient-to-br from-green-400 to-green-500 rounded-full border-4 border-white dark:border-slate-800 flex items-center justify-center shadow-lg">
+                          <div className="w-3 h-3 bg-white rounded-full" />
+                        </div>
                     </div>
                     
-                    <div className="space-y-2">
-                        <h2 className="text-2xl font-bold tracking-tight">Ready to talk?</h2>
-                        <p className="text-muted-foreground">Tap the button below to start a voice call with {character.name}</p>
+                    {/* Text */}
+                    <div className="space-y-3">
+                        <h2 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white">พร้อมคุยแล้วหรือยัง?</h2>
+                        <p className="text-slate-500 dark:text-slate-400 max-w-xs mx-auto">กดปุ่มด้านล่างเพื่อเริ่มคุยด้วยเสียงกับ {character.name}</p>
                     </div>
 
-                    <Button 
-                        size="lg" 
-                        onClick={startVoiceChat}
-                        disabled={isConnecting}
-                        className="rounded-full px-8 h-14 text-lg gap-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all hover:scale-105"
-                    >
-                        {isConnecting ? (
-                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        ) : (
-                            <Phone className="w-5 h-5" />
-                        )}
-                        Start Call
-                    </Button>
-                 </div>
+                    {/* Call Button */}
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <Button 
+                          size="lg" 
+                          onClick={startVoiceChat}
+                          disabled={isConnecting}
+                          className="rounded-full px-10 h-16 text-lg gap-3 bg-gradient-to-r from-violet-600 via-purple-600 to-violet-600 hover:from-violet-700 hover:via-purple-700 hover:to-violet-700 shadow-xl shadow-purple-500/30 hover:shadow-purple-500/40 transition-all border-0"
+                      >
+                          {isConnecting ? (
+                              <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                          ) : (
+                              <Phone className="w-6 h-6" />
+                          )}
+                          <span className="font-semibold">{isConnecting ? 'กำลังเชื่อมต่อ...' : 'เริ่มคุยเลย'}</span>
+                      </Button>
+                    </motion.div>
+                 </motion.div>
                ) : (
-                 <div className="w-full max-w-md flex flex-col items-center justify-center h-full space-y-8">
-                    {/* Active Call UI */}
+                 <motion.div 
+                   initial={{ opacity: 0 }}
+                   animate={{ opacity: 1 }}
+                   className="w-full max-w-md flex flex-col items-center justify-center h-full space-y-6"
+                 >
+                    {/* Active Call Avatar with Sound Waves */}
                     <div className="relative">
-                       {/* Ripple Effects based on volume */}
-                       <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl transition-all duration-100" 
-                            style={{ transform: `scale(${1 + volume * 2})`, opacity: 0.5 + volume }} />
+                       {/* Animated rings */}
+                       <motion.div 
+                         animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.1, 0.3] }}
+                         transition={{ duration: 2, repeat: Infinity }}
+                         className="absolute inset-0 bg-gradient-to-br from-violet-500/40 to-purple-500/40 rounded-full"
+                         style={{ transform: `scale(${1.2 + volume * 0.5})` }}
+                       />
+                       <motion.div 
+                         animate={{ scale: [1, 1.4, 1], opacity: [0.2, 0.05, 0.2] }}
+                         transition={{ duration: 2, repeat: Infinity, delay: 0.3 }}
+                         className="absolute inset-0 bg-gradient-to-br from-violet-500/30 to-purple-500/30 rounded-full"
+                         style={{ transform: `scale(${1.4 + volume * 0.8})` }}
+                       />
                        
-                       <Avatar src={character.avatar} className="w-40 h-40 border-4 border-background shadow-2xl relative z-10" />
+                       {/* Main Avatar */}
+                       <div className="relative w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-br from-slate-100 to-white dark:from-slate-800 dark:to-slate-900 flex items-center justify-center text-6xl md:text-7xl border-4 border-white dark:border-slate-700 shadow-2xl z-10">
+                         {character.avatar || '✨'}
+                       </div>
                        
-                       <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-card border px-4 py-1.5 rounded-full shadow-sm z-20 whitespace-nowrap flex items-center gap-2">
+                       {/* Status Badge */}
+                       <motion.div 
+                         initial={{ y: 10, opacity: 0 }}
+                         animate={{ y: 0, opacity: 1 }}
+                         className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full shadow-lg z-20 whitespace-nowrap flex items-center gap-2"
+                       >
                           {speakerSource === 'user' ? (
                              <>
-                               <Mic className="w-3 h-3 text-primary animate-pulse" />
-                               <span className="text-xs font-medium">Listening...</span>
+                               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                               <span className="text-sm font-medium text-slate-700 dark:text-slate-200">กำลังฟัง...</span>
                              </>
                           ) : (
                              <>
-                               <div className="flex gap-0.5 h-3 items-center">
-                                 <div className="w-1 bg-purple-500 h-2 animate-bounce" />
-                                 <div className="w-1 bg-purple-500 h-3 animate-bounce [animation-delay:0.1s]" />
-                                 <div className="w-1 bg-purple-500 h-2 animate-bounce [animation-delay:0.2s]" />
+                               <div className="flex gap-0.5 h-4 items-end">
+                                 <motion.div animate={{ height: ['40%', '100%', '40%'] }} transition={{ duration: 0.5, repeat: Infinity }} className="w-1 bg-violet-500 rounded-full" />
+                                 <motion.div animate={{ height: ['60%', '30%', '60%'] }} transition={{ duration: 0.5, repeat: Infinity, delay: 0.1 }} className="w-1 bg-violet-500 rounded-full" />
+                                 <motion.div animate={{ height: ['30%', '80%', '30%'] }} transition={{ duration: 0.5, repeat: Infinity, delay: 0.2 }} className="w-1 bg-violet-500 rounded-full" />
                                </div>
-                               <span className="text-xs font-medium text-purple-600">{character.name} is speaking</span>
+                               <span className="text-sm font-medium text-violet-600 dark:text-violet-400">{character.name} กำลังพูด</span>
                              </>
                           )}
-                       </div>
+                       </motion.div>
                     </div>
 
                     {/* Visualizer */}
-                    <div className="h-16 w-full flex items-center justify-center">
+                    <div className="h-20 w-full flex items-center justify-center my-4">
                         <Visualizer isActive={true} volume={volume} source={speakerSource} />
                     </div>
 
-                    {/* Live Transcript / Subtitles */}
-                    <div className="w-full h-32 overflow-y-auto bg-card/50 backdrop-blur-sm border rounded-2xl p-4 text-center">
-                        <p className="text-muted-foreground text-sm mb-2 font-medium uppercase tracking-wider text-[10px]">Live Transcript</p>
+                    {/* Live Transcript */}
+                    <div className="w-full min-h-[120px] overflow-y-auto bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200 dark:border-slate-700 rounded-3xl p-5 shadow-lg">
+                        <p className="text-center text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-3">ข้อความสด</p>
                         {currentStreamText ? (
-                            <p className="text-lg leading-relaxed animate-in fade-in slide-in-from-bottom-2">
+                            <motion.p 
+                              initial={{ opacity: 0, y: 5 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="text-lg text-center leading-relaxed text-slate-700 dark:text-slate-200"
+                            >
                                 {currentStreamText}
-                            </p>
+                            </motion.p>
                         ) : (
-                            <p className="text-muted-foreground/40 italic">Waiting for speech...</p>
+                            <p className="text-center text-slate-400 dark:text-slate-500 italic">รอเสียงพูด...</p>
                         )}
                     </div>
-                 </div>
+                 </motion.div>
                )}
             </div>
 
-            {/* End Call Button Area */}
+            {/* End Call Button */}
             {isConnected && (
-                <div className="p-6 flex justify-center pb-8 bg-gradient-to-t from-background via-background/80 to-transparent">
-                    <Button 
-                        onClick={endVoiceChat}
-                        variant="danger"
-                        size="lg"
-                        className="rounded-full px-8 h-14 shadow-lg hover:shadow-xl hover:scale-105 transition-all gap-2"
-                    >
-                        <PhoneOff className="w-5 h-5" />
-                        End Call
-                    </Button>
-                </div>
+                <motion.div 
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  className="p-6 flex justify-center pb-10 bg-gradient-to-t from-slate-100 dark:from-[#0f0d1a] via-transparent to-transparent"
+                >
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <Button 
+                          onClick={endVoiceChat}
+                          variant="danger"
+                          size="lg"
+                          className="rounded-full px-10 h-14 shadow-xl shadow-red-500/20 hover:shadow-red-500/30 transition-all gap-3 text-base font-semibold"
+                      >
+                          <PhoneOff className="w-5 h-5" />
+                          วางสาย
+                      </Button>
+                    </motion.div>
+                </motion.div>
             )}
           </main>
         )}

@@ -3,16 +3,24 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { User, Sparkles } from 'lucide-react';
+import { User } from 'lucide-react';
 
 interface AvatarProps {
   src?: string;
   name?: string;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
   showStatus?: boolean;
   status?: 'online' | 'offline' | 'busy';
   className?: string;
   icon?: React.ReactNode;
+}
+
+// Helper to check if string is emoji
+function isEmoji(str: string): boolean {
+  if (!str) return false;
+  // Check if string contains emoji characters
+  const emojiRegex = /^[\p{Emoji_Presentation}\p{Extended_Pictographic}]+$/u;
+  return emojiRegex.test(str.trim());
 }
 
 export const Avatar: React.FC<AvatarProps> = ({
@@ -25,10 +33,11 @@ export const Avatar: React.FC<AvatarProps> = ({
   icon,
 }) => {
   const sizeStyles = {
-    sm: 'w-8 h-8 text-xs',
-    md: 'w-10 h-10 text-sm',
-    lg: 'w-14 h-14 text-lg',
-    xl: 'w-20 h-20 text-2xl',
+    sm: 'w-8 h-8 text-sm',
+    md: 'w-10 h-10 text-lg',
+    lg: 'w-14 h-14 text-2xl',
+    xl: 'w-20 h-20 text-4xl',
+    '2xl': 'w-32 h-32 text-6xl',
   };
 
   const statusSizes = {
@@ -36,6 +45,7 @@ export const Avatar: React.FC<AvatarProps> = ({
     md: 'w-2.5 h-2.5',
     lg: 'w-3 h-3',
     xl: 'w-4 h-4',
+    '2xl': 'w-5 h-5',
   };
 
   const statusColors = {
@@ -45,6 +55,7 @@ export const Avatar: React.FC<AvatarProps> = ({
   };
 
   const initial = name ? name.charAt(0).toUpperCase() : null;
+  const srcIsEmoji = src && isEmoji(src);
 
   return (
     <div className={cn("relative inline-block", className)}>
@@ -52,13 +63,17 @@ export const Avatar: React.FC<AvatarProps> = ({
         whileHover={{ scale: 1.05 }}
         className={cn(
             sizeStyles[size],
-            "rounded-full overflow-hidden flex items-center justify-center font-bold text-primary-foreground",
-            "bg-gradient-to-br from-primary to-primary/60",
+            "rounded-full overflow-hidden flex items-center justify-center font-bold",
+            srcIsEmoji 
+              ? "bg-gradient-to-br from-primary/20 to-secondary text-foreground"
+              : "bg-gradient-to-br from-primary to-primary/60 text-primary-foreground",
             "border-2 border-background shadow-lg"
         )}
       >
-        {src ? (
+        {src && !srcIsEmoji ? (
           <img src={src} alt={name} className="w-full h-full object-cover" />
+        ) : srcIsEmoji ? (
+          <span className="leading-none">{src}</span>
         ) : icon ? (
            icon
         ) : initial ? (
