@@ -111,11 +111,8 @@
     -webkit-overflow-scrolling: touch;
     /* Prevent browser from moving content when URL bar shows/hides */
     position: fixed;
+    inset: 0;
     width: 100%;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
   }
   
   /* Allow scrolling for admin/teacher pages */
@@ -144,10 +141,7 @@
   /* Mobile chat page fix - prevent content shift */
   .chat-page-container {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     display: flex;
     flex-direction: column;
   }
