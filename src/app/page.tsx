@@ -7,7 +7,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import { Character } from '@/types';
 import { fetchCharacters, deleteCharacter } from '@/services/characterService';
 import { AppLayout } from '@/components/layout';
-import { Button, Card, Badge, Avatar } from '@/components/ui';
+import { Button, Card, Badge, Avatar, ConfirmModal } from '@/components/ui';
 import { Plus, MessageCircle, Sparkles, User, Mic, MoreVertical, Trash2, Edit } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -17,6 +17,11 @@ export default function HomePage() {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [loading, setLoading] = useState(true);
   const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
+  
+  // Delete modal state
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [characterToDelete, setCharacterToDelete] = useState<Character | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -32,15 +37,24 @@ export default function HomePage() {
     loadData();
   }, []);
 
-  const handleDeleteCharacter = async (e: React.MouseEvent, charId: string) => {
+  const openDeleteModal = (e: React.MouseEvent, char: Character) => {
     e.stopPropagation();
-    if (!confirm('ต้องการลบตัวละครนี้หรือไม่?')) return;
-    
-    const success = await deleteCharacter(charId);
-    if (success) {
-      setCharacters(prev => prev.filter(c => c.id !== charId));
-    }
+    setCharacterToDelete(char);
+    setDeleteModalOpen(true);
     setMenuOpenId(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!characterToDelete) return;
+    
+    setIsDeleting(true);
+    const success = await deleteCharacter(characterToDelete.id);
+    if (success) {
+      setCharacters(prev => prev.filter(c => c.id !== characterToDelete.id));
+    }
+    setIsDeleting(false);
+    setDeleteModalOpen(false);
+    setCharacterToDelete(null);
   };
 
   const toggleMenu = (e: React.MouseEvent, charId: string) => {
@@ -192,7 +206,7 @@ export default function HomePage() {
                                             แก้ไข
                                         </button>
                                         <button
-                                            onClick={(e) => handleDeleteCharacter(e, char.id)}
+                                            onClick={(e) => openDeleteModal(e, char)}
                                             className="w-full px-4 py-2 text-left text-sm hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 flex items-center gap-2 cursor-pointer"
                                         >
                                             <Trash2 className="w-4 h-4" />
@@ -224,6 +238,22 @@ export default function HomePage() {
             </motion.div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteModalOpen}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setCharacterToDelete(null);
+        }}
+        onConfirm={handleDeleteConfirm}
+        title="ลบตัวละคร"
+        description={`คุณต้องการลบ "${characterToDelete?.name}" หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้`}
+        confirmText="ลบ"
+        cancelText="ยกเลิก"
+        variant="danger"
+        isLoading={isDeleting}
+      />
     </AppLayout>
     </ProtectedRoute>
   );

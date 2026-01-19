@@ -5,4 +5,5 @@ export { Badge } from './Badge';
 export { Input, Textarea } from './Input';
 export { Avatar, EmojiAvatar } from './Avatar';
 export { ThemeToggle } from './ThemeToggle';
+export { Modal, ConfirmModal } from './Modal';
 export * from './Icons';
