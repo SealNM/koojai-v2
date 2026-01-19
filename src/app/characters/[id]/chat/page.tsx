@@ -124,6 +124,10 @@ function CharacterChatPage({ params }: { params: Promise<{ id: string }> }) {
   const [currentStreamText, setCurrentStreamText] = useState('');
   const [currentStreamRole, setCurrentStreamRole] = useState<'user' | 'assistant'>('user');
   
+  // Voice chat end states
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [healingQuote, setHealingQuote] = useState<string | null>(null);
+  
   // Risk tracking for text mode
   const RISK_REPORT_THRESHOLD = 3; // Send update report every 3 risky messages
   const CONTEXT_MESSAGE_LIMIT = 5; // Include last 5 messages in report context
@@ -352,6 +356,9 @@ ${contextSection}
       streamTimeoutRef.current = null;
     }
     
+    // Show analyzing state
+    setIsAnalyzing(true);
+    
     // Analyze conversation and send to teacher if there's content
     if (conversationLogRef.current.length > 0 && user?.student_id) {
       try {
@@ -364,18 +371,25 @@ ${contextSection}
           conversationText
         );
         
-        if (report && report.should_notify_teacher) {
-          // Send report to teacher via API
-          try {
-            await fetch('/api/reports', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(report),
-            });
-            
-            console.log('Report sent to teacher:', report);
-          } catch (apiError) {
-            console.error('Failed to send report to teacher:', apiError);
+        if (report) {
+          // Show healing quote
+          if (report.healing_quote) {
+            setHealingQuote(report.healing_quote);
+          }
+          
+          // Send report to teacher if needed
+          if (report.should_notify_teacher) {
+            try {
+              await fetch('/api/reports', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(report),
+              });
+              
+              console.log('Report sent to teacher:', report);
+            } catch (apiError) {
+              console.error('Failed to send report to teacher:', apiError);
+            }
           }
         }
         
@@ -385,6 +399,8 @@ ${contextSection}
         console.error('Failed to analyze conversation:', error);
       }
     }
+    
+    setIsAnalyzing(false);
   };
 
   // =====================
@@ -537,10 +553,10 @@ ${contextSection}
 
   return (
     <ProtectedRoute>
-      <div className="flex h-[100dvh] bg-background text-foreground flex-col overflow-hidden">
+      <div className="flex h-screen max-h-screen bg-background text-foreground flex-col overflow-hidden fixed inset-0">
         
         {/* Header */}
-        <header className="flex-none h-16 border-b bg-background/80 backdrop-blur-md sticky top-0 z-20 flex items-center justify-between px-4">
+        <header className="flex-none h-16 border-b bg-background/80 backdrop-blur-md flex items-center justify-between px-4 shrink-0">
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
@@ -689,7 +705,36 @@ ${contextSection}
             </div>
 
             <div className="flex-1 flex flex-col items-center justify-center p-6 z-10">
-               {!isConnected ? (
+               {isAnalyzing ? (
+                 <motion.div
+                   initial={{ opacity: 0 }}
+                   animate={{ opacity: 1 }}
+                   className="text-center space-y-6"
+                 >
+                   <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+                   <p className="text-lg font-medium text-foreground">กำลังวิเคราะห์การสนทนา...</p>
+                 </motion.div>
+               ) : healingQuote ? (
+                 <motion.div
+                   initial={{ opacity: 0, scale: 0.9 }}
+                   animate={{ opacity: 1, scale: 1 }}
+                   className="max-w-md space-y-6 text-center"
+                 >
+                   <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-lg">
+                     <span className="text-4xl">💚</span>
+                   </div>
+                   <h3 className="text-2xl font-bold text-foreground">ขอบคุณที่คุยกับเรา</h3>
+                   <Card className="p-6 bg-gradient-to-br from-primary/5 to-secondary/5">
+                     <p className="text-lg leading-relaxed text-foreground">{healingQuote}</p>
+                   </Card>
+                   <Button onClick={() => {
+                     setHealingQuote(null);
+                     setMode('text');
+                   }}>
+                     กลับไปหน้าแชท
+                   </Button>
+                 </motion.div>
+               ) : !isConnected ? (
                  <motion.div 
                    initial={{ opacity: 0, scale: 0.9 }}
                    animate={{ opacity: 1, scale: 1 }}
@@ -698,10 +743,10 @@ ${contextSection}
                     {/* Avatar with glow */}
                     <div className="relative inline-block">
                         <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-purple-600 rounded-full blur-2xl opacity-30 scale-110" />
-                        <div className="relative w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-br from-slate-100 to-white dark:from-slate-800 dark:to-slate-900 flex items-center justify-center text-6xl md:text-7xl border-4 border-white dark:border-slate-700 shadow-2xl">
+                        <div className="relative w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-br from-slate-100 to-white dark:from-slate-800 dark:to-slate-900 flex items-center justify-center text-6xl md:text-7xl shadow-2xl overflow-hidden">
                           {character.avatar || '✨'}
                         </div>
-                        <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-gradient-to-br from-green-400 to-green-500 rounded-full border-4 border-white dark:border-slate-800 flex items-center justify-center shadow-lg">
+                        <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center shadow-lg">
                           <div className="w-3 h-3 bg-white rounded-full" />
                         </div>
                     </div>
@@ -752,7 +797,7 @@ ${contextSection}
                        />
                        
                        {/* Main Avatar */}
-                       <div className="relative w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-br from-slate-100 to-white dark:from-slate-800 dark:to-slate-900 flex items-center justify-center text-6xl md:text-7xl border-4 border-white dark:border-slate-700 shadow-2xl z-10">
+                       <div className="relative w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-br from-slate-100 to-white dark:from-slate-800 dark:to-slate-900 flex items-center justify-center text-6xl md:text-7xl shadow-2xl z-10 overflow-hidden">
                          {character.avatar || '✨'}
                        </div>
                        
