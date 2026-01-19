@@ -431,13 +431,47 @@ ${contextSection}
           } catch (apiError) {
             console.error('Failed to send report to teacher:', apiError);
           }
+        } else {
+          // If analysis failed (e.g., due to rate limits), show a default healing quote
+          console.log('Voice chat - Analysis returned null (possibly rate limited), showing default message');
+          setHealingQuote('ขอบคุณที่คุยกับเรานะ หวังว่าจะได้คุยกันอีก! 💙');
+          
+          // Still try to save a basic report to database
+          try {
+            const basicReport = {
+              student_id: user.student_id,
+              severity_level: 'NONE',
+              problem_category: ['การสนทนาทั่วไป'],
+              summary_for_teacher: `นักเรียนคุยด้วยเสียงกับ AI (ไม่สามารถวิเคราะห์รายละเอียดได้เนื่องจากระบบยุ่ง)`,
+              recommendation_for_teacher: 'ติดตามนักเรียนตามปกติ',
+              should_notify_teacher: false,
+              memory_for_next_session: '',
+              healing_quote: 'ขอบคุณที่คุยกับเรานะ!'
+            };
+            
+            const response = await fetch('/api/reports', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(basicReport),
+            });
+            
+            const result = await response.json();
+            console.log('Basic voice chat report sent - Response:', result, 'Status:', response.status);
+          } catch (apiError) {
+            console.error('Failed to send basic report:', apiError);
+          }
         }
         
         // Clear conversation log for next session
         conversationLogRef.current = [];
       } catch (error) {
         console.error('Failed to analyze conversation:', error);
+        // Show a default message on error
+        setHealingQuote('ขอบคุณที่คุยกับเรานะ หวังว่าจะได้คุยกันอีก! 💙');
       }
+    } else {
+      // No conversation to analyze, just show a friendly message
+      setHealingQuote('ไว้มาคุยกันใหม่นะ! 💙');
     }
     
     setIsAnalyzing(false);
@@ -634,7 +668,7 @@ ${contextSection}
                 name={character.name} 
                 className={cn(
                     "ring-2 ring-primary/20",
-                    mode === 'voice' && "ring-purple-500/50 animate-pulse"
+                    mode === 'voice' && "ring-sky-500/50 animate-pulse"
                 )}
             />
             
@@ -644,11 +678,11 @@ ${contextSection}
               </h1>
               <p className={cn(
                 "text-xs flex items-center gap-1", 
-                mode === 'voice' ? "text-purple-500 font-medium" : "text-muted-foreground"
+                mode === 'voice' ? "text-sky-500 font-medium" : "text-muted-foreground"
               )}>
                 {mode === 'voice' ? (
                    <>
-                     <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
+                     <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" />
                      โหมดเสียง
                    </>
                 ) : (
@@ -665,7 +699,7 @@ ${contextSection}
               onClick={toggleMode}
               className={cn(
                 "rounded-full transition-all duration-300 gap-2",
-                mode === 'voice' && "bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 border-none shadow-md"
+                mode === 'voice' && "bg-gradient-to-r from-sky-500 to-blue-500 hover:from-sky-600 hover:to-blue-600 border-none shadow-md"
               )}
             >
               {mode === 'text' ? (
@@ -761,7 +795,7 @@ ${contextSection}
           <main className="flex-1 flex flex-col relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-100 dark:from-[#0f0d1a] dark:via-[#1a1625] dark:to-[#0f0d1a]">
             {/* Animated Background */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-1/4 -left-20 w-80 h-80 bg-gradient-to-br from-violet-500/20 to-purple-500/10 rounded-full blur-[100px] animate-pulse" />
+                <div className="absolute top-1/4 -left-20 w-80 h-80 bg-gradient-to-br from-sky-500/20 to-blue-500/10 rounded-full blur-[100px] animate-pulse" />
                 <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-gradient-to-br from-blue-500/20 to-cyan-500/10 rounded-full blur-[100px] animate-pulse [animation-delay:1s]" />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-[80px]" />
             </div>
@@ -804,7 +838,7 @@ ${contextSection}
                  >
                     {/* Avatar with glow */}
                     <div className="relative inline-block">
-                        <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-purple-600 rounded-full blur-2xl opacity-30 scale-110" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-sky-500 to-blue-600 rounded-full blur-2xl opacity-30 scale-110" />
                         <div className="relative w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-br from-slate-100 to-white dark:from-slate-800 dark:to-slate-900 flex items-center justify-center text-6xl md:text-7xl shadow-2xl overflow-hidden">
                           {character.avatar || '✨'}
                         </div>
@@ -825,7 +859,7 @@ ${contextSection}
                           size="lg" 
                           onClick={startVoiceChat}
                           disabled={isConnecting}
-                          className="rounded-full px-10 h-16 text-lg gap-3 bg-gradient-to-r from-violet-600 via-purple-600 to-violet-600 hover:from-violet-700 hover:via-purple-700 hover:to-violet-700 shadow-xl shadow-purple-500/30 hover:shadow-purple-500/40 transition-all border-0"
+                          className="rounded-full px-10 h-16 text-lg gap-3 bg-gradient-to-r from-sky-500 via-blue-500 to-sky-500 hover:from-sky-600 hover:via-blue-600 hover:to-sky-600 shadow-xl shadow-sky-500/30 hover:shadow-sky-500/40 transition-all border-0"
                       >
                           {isConnecting ? (
                               <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
@@ -848,13 +882,13 @@ ${contextSection}
                        <motion.div 
                          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.1, 0.3] }}
                          transition={{ duration: 2, repeat: Infinity }}
-                         className="absolute inset-0 bg-gradient-to-br from-violet-500/40 to-purple-500/40 rounded-full"
+                         className="absolute inset-0 bg-gradient-to-br from-sky-500/40 to-blue-500/40 rounded-full"
                          style={{ transform: `scale(${1.2 + volume * 0.5})` }}
                        />
                        <motion.div 
                          animate={{ scale: [1, 1.4, 1], opacity: [0.2, 0.05, 0.2] }}
                          transition={{ duration: 2, repeat: Infinity, delay: 0.3 }}
-                         className="absolute inset-0 bg-gradient-to-br from-violet-500/30 to-purple-500/30 rounded-full"
+                         className="absolute inset-0 bg-gradient-to-br from-sky-500/30 to-blue-500/30 rounded-full"
                          style={{ transform: `scale(${1.4 + volume * 0.8})` }}
                        />
                        
@@ -877,11 +911,11 @@ ${contextSection}
                           ) : (
                              <>
                                <div className="flex gap-0.5 h-4 items-end">
-                                 <motion.div animate={{ height: ['40%', '100%', '40%'] }} transition={{ duration: 0.5, repeat: Infinity }} className="w-1 bg-violet-500 rounded-full" />
-                                 <motion.div animate={{ height: ['60%', '30%', '60%'] }} transition={{ duration: 0.5, repeat: Infinity, delay: 0.1 }} className="w-1 bg-violet-500 rounded-full" />
-                                 <motion.div animate={{ height: ['30%', '80%', '30%'] }} transition={{ duration: 0.5, repeat: Infinity, delay: 0.2 }} className="w-1 bg-violet-500 rounded-full" />
+                                 <motion.div animate={{ height: ['40%', '100%', '40%'] }} transition={{ duration: 0.5, repeat: Infinity }} className="w-1 bg-sky-500 rounded-full" />
+                                 <motion.div animate={{ height: ['60%', '30%', '60%'] }} transition={{ duration: 0.5, repeat: Infinity, delay: 0.1 }} className="w-1 bg-sky-500 rounded-full" />
+                                 <motion.div animate={{ height: ['30%', '80%', '30%'] }} transition={{ duration: 0.5, repeat: Infinity, delay: 0.2 }} className="w-1 bg-sky-500 rounded-full" />
                                </div>
-                               <span className="text-sm font-medium text-violet-600 dark:text-violet-400">{character.name} กำลังพูด</span>
+                               <span className="text-sm font-medium text-sky-600 dark:text-sky-400">{character.name} กำลังพูด</span>
                              </>
                           )}
                        </motion.div>
