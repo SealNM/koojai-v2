@@ -79,6 +79,44 @@ function ChatBubble({
 // =====================
 // Risk Detection Helpers
 // =====================
+
+// Default healing quote when analysis fails or is unavailable
+const DEFAULT_HEALING_QUOTE = 'ขอบคุณที่คุยกับเรานะ หวังว่าจะได้คุยกันอีก! 💙';
+
+// Risk keywords to detect risky messages from user input (pre-converted to lowercase)
+const CRITICAL_KEYWORDS = [
+  'ฆ่าตัวตาย', 'อยากตาย', 'ไม่อยากมีชีวิต', 'อยากจบชีวิต', 'อยากหายไป',
+  'กรีดข้อมือ', 'ทำร้ายตัวเอง', 'กินยาเกินขนาด', 'แขวนคอ', 'กระโดดตึก',
+  'ถูกทำร้าย', 'ถูกล่วงละเมิด', 'ถูกข่มขืน', 'ถูกตบ', 'ถูกตี'
+].map(k => k.toLowerCase());
+
+const HIGH_KEYWORDS = [
+  'เครียดมาก', 'ไม่ไหวแล้ว', 'หมดหวัง', 'ร้องไห้ทุกวัน', 'นอนไม่หลับ',
+  'เกลียดตัวเอง', 'ไม่มีค่า', 'ไร้ค่า', 'ไม่มีใครรัก', 'ไม่มีเพื่อน',
+  'ถูกกลั่นแกล้ง', 'โดนบูลลี่', 'เป็นโรคซึมเศร้า', 'panic', 'แพนิค',
+  'พ่อแม่ทะเลาะ', 'พ่อแม่หย่า', 'คนในบ้านทำร้าย', 'อยากหนีออกจากบ้าน'
+].map(k => k.toLowerCase());
+
+function checkUserMessageForRisk(userMessage: string): { level: string; concern: string } | null {
+  const lowerMessage = userMessage.toLowerCase();
+  
+  // Check for critical keywords
+  for (const keyword of CRITICAL_KEYWORDS) {
+    if (lowerMessage.includes(keyword)) {
+      return { level: 'CRITICAL', concern: `ตรวจพบคำเสี่ยงร้ายแรง: "${keyword}"` };
+    }
+  }
+  
+  // Check for high-risk keywords
+  for (const keyword of HIGH_KEYWORDS) {
+    if (lowerMessage.includes(keyword)) {
+      return { level: 'HIGH', concern: `ตรวจพบคำที่ต้องติดตาม: "${keyword}"` };
+    }
+  }
+  
+  return null;
+}
+
 function checkForRisk(aiResponse: string): { level: string; concern: string } | null {
   const riskMatch = aiResponse.match(/\[RISK_FLAG:\s*\{([^}]+)\}\]/);
   if (riskMatch) {
@@ -377,27 +415,53 @@ ${contextSection}
             setHealingQuote(report.healing_quote);
           }
           
-          // Send report to teacher if needed
-          if (report.should_notify_teacher) {
-            console.log('Voice chat - Sending report to teacher, should_notify:', report.should_notify_teacher);
-            try {
-              const response = await fetch('/api/reports', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(report),
-              });
-              
-              const result = await response.json();
-              console.log('Voice chat report sent - Response:', result, 'Status:', response.status);
-              
-              if (!response.ok) {
-                console.error('Failed to save voice chat report - Status:', response.status, 'Result:', result);
-              }
-            } catch (apiError) {
-              console.error('Failed to send report to teacher:', apiError);
+          // Always send report to database when ending voice chat
+          // Voice mode requirement: Always send summary to teacher regardless of risk level
+          console.log('Voice chat - Always sending report to database, severity:', report.severity_level);
+          try {
+            const response = await fetch('/api/reports', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(report),
+            });
+            
+            const result = await response.json();
+            console.log('Voice chat report sent - Response:', result, 'Status:', response.status);
+            
+            if (!response.ok) {
+              console.error('Failed to save voice chat report - Status:', response.status, 'Result:', result);
             }
-          } else {
-            console.log('Voice chat - Not sending report, should_notify_teacher is false');
+          } catch (apiError) {
+            console.error('Failed to send report to teacher:', apiError);
+          }
+        } else {
+          // If analysis failed (e.g., due to rate limits), show a default healing quote
+          console.log('Voice chat - Analysis returned null (possibly rate limited), showing default message');
+          setHealingQuote(DEFAULT_HEALING_QUOTE);
+          
+          // Still try to save a basic report to database (user.student_id is already validated in the outer if condition)
+          try {
+            const basicReport = {
+              student_id: user.student_id,
+              severity_level: 'NONE',
+              problem_category: ['การสนทนาทั่วไป'],
+              summary_for_teacher: `นักเรียนคุยด้วยเสียงกับ AI (ไม่สามารถวิเคราะห์รายละเอียดได้เนื่องจากระบบยุ่ง)`,
+              recommendation_for_teacher: 'ติดตามนักเรียนตามปกติ',
+              should_notify_teacher: false,
+              memory_for_next_session: '',
+              healing_quote: DEFAULT_HEALING_QUOTE
+            };
+            
+            const response = await fetch('/api/reports', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(basicReport),
+            });
+            
+            const result = await response.json();
+            console.log('Basic voice chat report sent - Response:', result, 'Status:', response.status);
+          } catch (apiError) {
+            console.error('Failed to send basic report:', apiError);
           }
         }
         
@@ -405,7 +469,12 @@ ${contextSection}
         conversationLogRef.current = [];
       } catch (error) {
         console.error('Failed to analyze conversation:', error);
+        // Show a default message on error
+        setHealingQuote(DEFAULT_HEALING_QUOTE);
       }
+    } else {
+      // No conversation to analyze, just show a friendly message
+      setHealingQuote('ไว้มาคุยกันใหม่นะ! 💙');
     }
     
     setIsAnalyzing(false);
@@ -482,6 +551,12 @@ ${contextSection}
       await saveLocalMessage(userMsg);
       setMessages(prev => [...prev, userMsg]);
 
+      // First check user message for risk keywords
+      const userMessageRisk = checkUserMessageForRisk(userMessage);
+      if (userMessageRisk) {
+        console.log('User message risk detected:', userMessageRisk.level, '-', userMessageRisk.concern);
+      }
+
       const history = messages.map(m => ({
         role: m.role === 'user' ? 'user' : 'model',
         parts: [{ text: m.content }]
@@ -494,10 +569,15 @@ ${contextSection}
       );
 
       if (response) {
-        const risk = checkForRisk(response);
+        const aiResponseRisk = checkForRisk(response);
         const cleanedResponse = cleanResponse(response);
         
-        console.log('AI Response received, Risk detected:', risk ? `YES - Level: ${risk.level}, Concern: ${risk.concern}` : 'NO');
+        // Use the higher-priority risk: user message risk OR AI response risk
+        const risk = userMessageRisk || aiResponseRisk;
+        
+        console.log('Risk detection - User message:', userMessageRisk ? `${userMessageRisk.level}` : 'NONE', 
+                    '| AI response:', aiResponseRisk ? `${aiResponseRisk.level}` : 'NONE',
+                    '| Final:', risk ? `${risk.level}` : 'NONE');
 
         const aiMsg: LocalMessage = {
           id: uuidv4(),
@@ -591,7 +671,7 @@ ${contextSection}
                 name={character.name} 
                 className={cn(
                     "ring-2 ring-primary/20",
-                    mode === 'voice' && "ring-purple-500/50 animate-pulse"
+                    mode === 'voice' && "ring-sky-500/50 animate-pulse"
                 )}
             />
             
@@ -601,11 +681,11 @@ ${contextSection}
               </h1>
               <p className={cn(
                 "text-xs flex items-center gap-1", 
-                mode === 'voice' ? "text-purple-500 font-medium" : "text-muted-foreground"
+                mode === 'voice' ? "text-sky-500 font-medium" : "text-muted-foreground"
               )}>
                 {mode === 'voice' ? (
                    <>
-                     <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
+                     <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" />
                      โหมดเสียง
                    </>
                 ) : (
@@ -622,7 +702,7 @@ ${contextSection}
               onClick={toggleMode}
               className={cn(
                 "rounded-full transition-all duration-300 gap-2",
-                mode === 'voice' && "bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 border-none shadow-md"
+                mode === 'voice' && "bg-gradient-to-r from-sky-500 to-blue-500 hover:from-sky-600 hover:to-blue-600 border-none shadow-md"
               )}
             >
               {mode === 'text' ? (
@@ -643,8 +723,8 @@ ${contextSection}
         {/* Text Mode */}
         {mode === 'text' && (
           <>
-            <main className="flex-1 overflow-y-auto p-4 scroll-smooth">
-               <div className="max-w-2xl mx-auto space-y-6">
+            <main className="flex-1 overflow-y-auto p-4 scroll-smooth min-h-0">
+               <div className="max-w-2xl mx-auto space-y-6 pb-4">
                 {messages.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-20 text-center">
                     <div className="w-24 h-24 mb-6 rounded-full bg-gradient-to-br from-primary/20 to-secondary flex items-center justify-center text-5xl shadow-lg">
@@ -686,7 +766,7 @@ ${contextSection}
               </div>
             </main>
 
-            <footer className="p-4 bg-background/80 backdrop-blur-md border-t flex-none">
+            <footer className="p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-background/95 backdrop-blur-md border-t flex-none sticky bottom-0 left-0 right-0">
               <div className="max-w-2xl mx-auto relative flex items-end gap-2">
                 <div className="flex-1 relative">
                   <textarea
@@ -696,7 +776,7 @@ ${contextSection}
                      onKeyDown={handleKeyPress}
                      placeholder="พิมพ์ข้อความ..."
                      rows={1}
-                     className="flex w-full rounded-2xl border border-slate-200 dark:border-input bg-white dark:bg-card px-4 py-3 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-50 resize-none overflow-hidden min-h-[50px] max-h-[150px] text-slate-800 dark:text-foreground"
+                     className="flex w-full rounded-2xl border border-slate-200 dark:border-input bg-white dark:bg-card px-4 py-3 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-50 resize-none overflow-hidden min-h-[50px] max-h-[120px] text-slate-800 dark:text-foreground"
                      disabled={isSending}
                   />
                 </div>
@@ -718,7 +798,7 @@ ${contextSection}
           <main className="flex-1 flex flex-col relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-100 dark:from-[#0f0d1a] dark:via-[#1a1625] dark:to-[#0f0d1a]">
             {/* Animated Background */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-1/4 -left-20 w-80 h-80 bg-gradient-to-br from-violet-500/20 to-purple-500/10 rounded-full blur-[100px] animate-pulse" />
+                <div className="absolute top-1/4 -left-20 w-80 h-80 bg-gradient-to-br from-sky-500/20 to-blue-500/10 rounded-full blur-[100px] animate-pulse" />
                 <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-gradient-to-br from-blue-500/20 to-cyan-500/10 rounded-full blur-[100px] animate-pulse [animation-delay:1s]" />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-[80px]" />
             </div>
@@ -761,7 +841,7 @@ ${contextSection}
                  >
                     {/* Avatar with glow */}
                     <div className="relative inline-block">
-                        <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-purple-600 rounded-full blur-2xl opacity-30 scale-110" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-sky-500 to-blue-600 rounded-full blur-2xl opacity-30 scale-110" />
                         <div className="relative w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-br from-slate-100 to-white dark:from-slate-800 dark:to-slate-900 flex items-center justify-center text-6xl md:text-7xl shadow-2xl overflow-hidden">
                           {character.avatar || '✨'}
                         </div>
@@ -782,7 +862,7 @@ ${contextSection}
                           size="lg" 
                           onClick={startVoiceChat}
                           disabled={isConnecting}
-                          className="rounded-full px-10 h-16 text-lg gap-3 bg-gradient-to-r from-violet-600 via-purple-600 to-violet-600 hover:from-violet-700 hover:via-purple-700 hover:to-violet-700 shadow-xl shadow-purple-500/30 hover:shadow-purple-500/40 transition-all border-0"
+                          className="rounded-full px-10 h-16 text-lg gap-3 bg-gradient-to-r from-sky-500 via-blue-500 to-sky-500 hover:from-sky-600 hover:via-blue-600 hover:to-sky-600 shadow-xl shadow-sky-500/30 hover:shadow-sky-500/40 transition-all border-0"
                       >
                           {isConnecting ? (
                               <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
@@ -805,13 +885,13 @@ ${contextSection}
                        <motion.div 
                          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.1, 0.3] }}
                          transition={{ duration: 2, repeat: Infinity }}
-                         className="absolute inset-0 bg-gradient-to-br from-violet-500/40 to-purple-500/40 rounded-full"
+                         className="absolute inset-0 bg-gradient-to-br from-sky-500/40 to-blue-500/40 rounded-full"
                          style={{ transform: `scale(${1.2 + volume * 0.5})` }}
                        />
                        <motion.div 
                          animate={{ scale: [1, 1.4, 1], opacity: [0.2, 0.05, 0.2] }}
                          transition={{ duration: 2, repeat: Infinity, delay: 0.3 }}
-                         className="absolute inset-0 bg-gradient-to-br from-violet-500/30 to-purple-500/30 rounded-full"
+                         className="absolute inset-0 bg-gradient-to-br from-sky-500/30 to-blue-500/30 rounded-full"
                          style={{ transform: `scale(${1.4 + volume * 0.8})` }}
                        />
                        
@@ -834,11 +914,11 @@ ${contextSection}
                           ) : (
                              <>
                                <div className="flex gap-0.5 h-4 items-end">
-                                 <motion.div animate={{ height: ['40%', '100%', '40%'] }} transition={{ duration: 0.5, repeat: Infinity }} className="w-1 bg-violet-500 rounded-full" />
-                                 <motion.div animate={{ height: ['60%', '30%', '60%'] }} transition={{ duration: 0.5, repeat: Infinity, delay: 0.1 }} className="w-1 bg-violet-500 rounded-full" />
-                                 <motion.div animate={{ height: ['30%', '80%', '30%'] }} transition={{ duration: 0.5, repeat: Infinity, delay: 0.2 }} className="w-1 bg-violet-500 rounded-full" />
+                                 <motion.div animate={{ height: ['40%', '100%', '40%'] }} transition={{ duration: 0.5, repeat: Infinity }} className="w-1 bg-sky-500 rounded-full" />
+                                 <motion.div animate={{ height: ['60%', '30%', '60%'] }} transition={{ duration: 0.5, repeat: Infinity, delay: 0.1 }} className="w-1 bg-sky-500 rounded-full" />
+                                 <motion.div animate={{ height: ['30%', '80%', '30%'] }} transition={{ duration: 0.5, repeat: Infinity, delay: 0.2 }} className="w-1 bg-sky-500 rounded-full" />
                                </div>
-                               <span className="text-sm font-medium text-violet-600 dark:text-violet-400">{character.name} กำลังพูด</span>
+                               <span className="text-sm font-medium text-sky-600 dark:text-sky-400">{character.name} กำลังพูด</span>
                              </>
                           )}
                        </motion.div>

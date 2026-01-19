@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Kanit } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -14,6 +14,15 @@ const kanit = Kanit({
 export const metadata: Metadata = {
   title: "KooJai (คู่ใจ) - เพื่อนคู่ใจ AI",
   description: "ระบบ AI เพื่อนฟังใจสำหรับนักเรียน",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  interactiveWidget: "resizes-content",
 };
 
 export default function RootLayout({

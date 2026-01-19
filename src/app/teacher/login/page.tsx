@@ -61,7 +61,7 @@ function TeacherLoginForm() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center p-6 bg-slate-50 dark:bg-brand-dark relative overflow-hidden">
+    <div className="min-h-screen w-full flex items-center justify-center p-6 bg-slate-50 dark:bg-slate-900 relative overflow-hidden">
       {/* Background decorations */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-100 dark:bg-emerald-900/30 rounded-full opacity-30 blur-3xl translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute bottom-0 left-0 w-80 h-80 bg-emerald-100 dark:bg-emerald-900/30 rounded-full opacity-30 blur-3xl -translate-x-1/3 translate-y-1/3"></div>
@@ -119,7 +119,7 @@ function TeacherLoginForm() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 cursor-pointer"
               >
                 {showPassword ? <EyeOffIcon /> : <EyeIcon />}
               </button>
@@ -131,7 +131,7 @@ function TeacherLoginForm() {
             type="submit"
             disabled={isLoading}
             className={`w-full text-white text-lg font-semibold py-4 rounded-2xl transition duration-200 shadow-xl shadow-emerald-100 dark:shadow-emerald-900/30
-              ${isLoading ? 'bg-emerald-300 dark:bg-emerald-800 cursor-not-allowed' : 'bg-emerald-500 hover:bg-emerald-600 active:scale-[0.98]'}`}
+              ${isLoading ? 'bg-emerald-300 dark:bg-emerald-800 cursor-not-allowed' : 'bg-emerald-500 hover:bg-emerald-600 active:scale-[0.98] cursor-pointer'}`}
           >
             {isLoading ? (
               <span className="flex items-center justify-center space-x-2">
