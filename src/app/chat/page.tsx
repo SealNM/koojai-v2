@@ -153,7 +153,7 @@ export default function ChatHistoryPage() {
                     placeholder="ค้นหาข้อความ..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-9 pr-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full md:w-64 text-foreground placeholder:text-slate-500 dark:placeholder:text-slate-500"
+                    className="pl-9 pr-4 py-2 rounded-xl bg-card border border-border focus:outline-none focus:ring-2 focus:ring-primary w-full md:w-64 text-foreground placeholder:text-muted-foreground"
                   />
                </div>
             </div>

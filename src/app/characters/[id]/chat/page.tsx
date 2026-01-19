@@ -360,13 +360,17 @@ ${contextSection}
         
         if (report && report.should_notify_teacher) {
           // Send report to teacher via API
-          await fetch('/api/teacher/reports', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(report),
-          });
-          
-          console.log('Report sent to teacher:', report);
+          try {
+            await fetch('/api/teacher/reports', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(report),
+            });
+            
+            console.log('Report sent to teacher:', report);
+          } catch (apiError) {
+            console.error('Failed to send report to teacher:', apiError);
+          }
         }
         
         // Clear conversation log for next session
