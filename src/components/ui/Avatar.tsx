@@ -58,7 +58,7 @@ export const Avatar: React.FC<AvatarProps> = ({
   const srcIsEmoji = src && isEmoji(src);
 
   return (
-    <div className={cn("relative inline-block", className)}>
+    <div className={cn("relative inline-block rounded-full", className)}>
       <motion.div
         whileHover={{ scale: 1.05 }}
         className={cn(
