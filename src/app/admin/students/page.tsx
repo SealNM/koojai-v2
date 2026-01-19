@@ -332,13 +332,13 @@ function StudentManagementContent() {
           <div className="p-6 border-t border-slate-100 dark:border-slate-700 flex gap-3">
             <button
               onClick={onClose}
-              className="flex-1 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition font-medium text-slate-700 dark:text-slate-300"
+              className="flex-1 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition font-medium text-slate-700 dark:text-slate-300 cursor-pointer"
             >
               ยกเลิก
             </button>
             <button
               onClick={onSubmit}
-              className="flex-1 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition font-medium"
+              className="flex-1 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition font-medium cursor-pointer"
             >
               {isEdit ? 'บันทึก' : 'เพิ่ม'}
             </button>
@@ -349,28 +349,29 @@ function StudentManagementContent() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-brand-dark p-6">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-4 sm:p-6 overflow-auto">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
           <div className="flex items-center gap-4">
             <button
               onClick={() => router.push('/admin/dashboard')}
-              className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition text-slate-600 dark:text-slate-400"
+              className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition text-slate-600 dark:text-slate-400 cursor-pointer"
             >
               <BackIcon />
             </button>
             <div>
-              <h1 className="text-2xl font-bold text-slate-800 dark:text-white">จัดการบัญชีนักเรียน</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white">จัดการบัญชีนักเรียน</h1>
               <p className="text-slate-500 dark:text-slate-400 text-sm">เพิ่ม/แก้ไข/ลบบัญชีนักเรียนในระบบ</p>
             </div>
           </div>
           <button
             onClick={() => { resetForm(); setShowAddModal(true); }}
-            className="flex items-center gap-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition font-medium"
+            className="flex items-center gap-2 px-4 py-2.5 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition font-medium cursor-pointer"
           >
             <PlusIcon />
-            <span>เพิ่มนักเรียน</span>
+            <span className="hidden sm:inline">เพิ่มนักเรียน</span>
+            <span className="sm:hidden">เพิ่ม</span>
           </button>
         </div>
 
@@ -398,7 +399,7 @@ function StudentManagementContent() {
           <select
             value={gradeFilter}
             onChange={e => setGradeFilter(e.target.value)}
-            className="px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-400 dark:focus:border-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+            className="px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-400 dark:focus:border-blue-500 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-white cursor-pointer"
           >
             <option value="">ทุกระดับชั้น</option>
             {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
@@ -448,22 +449,22 @@ function StudentManagementContent() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <div className="flex justify-end gap-2">
+                        <div className="flex flex-wrap justify-end gap-2">
                           <button
                             onClick={() => openEditModal(student)}
-                            className="px-3 py-1.5 text-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-sm font-medium"
+                            className="px-3 py-1.5 text-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-sm font-medium cursor-pointer"
                           >
                             แก้ไข
                           </button>
                           <button
                             onClick={() => handleResetPassword(student.id!)}
-                            className="px-3 py-1.5 text-amber-500 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg text-sm font-medium"
+                            className="px-3 py-1.5 text-amber-500 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg text-sm font-medium cursor-pointer"
                           >
                             รีเซ็ตรหัส
                           </button>
                           <button
                             onClick={() => handleDeleteStudent(student.id!)}
-                            className="px-3 py-1.5 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-sm font-medium"
+                            className="px-3 py-1.5 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-sm font-medium cursor-pointer"
                           >
                             ลบ
                           </button>

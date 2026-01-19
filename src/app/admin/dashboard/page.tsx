@@ -97,7 +97,7 @@ function AdminDashboardContent() {
       .pop() || '-';
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-brand-dark relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 relative overflow-auto">
       {/* Background */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute top-[10%] right-[5%] w-96 h-96 bg-blue-200/40 dark:bg-blue-600/20 rounded-full blur-3xl"></div>
@@ -116,13 +116,13 @@ function AdminDashboardContent() {
           <div className="flex items-center gap-3">
             <Link
               href="/admin/students"
-              className="px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-sm transition-all font-medium text-sm flex items-center gap-2"
+              className="px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-sm transition-all font-medium text-sm flex items-center gap-2 cursor-pointer"
             >
               👥 จัดการนักเรียน
             </Link>
             <button
               onClick={handleLogout}
-              className="px-6 py-2.5 bg-white/80 dark:bg-slate-800 backdrop-blur border border-slate-200 dark:border-slate-700 rounded-full shadow-sm text-slate-600 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500 hover:border-red-100 dark:hover:border-red-900/50 transition-all font-medium text-sm"
+              className="px-6 py-2.5 bg-white/80 dark:bg-slate-800 backdrop-blur border border-slate-200 dark:border-slate-700 rounded-full shadow-sm text-slate-600 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500 hover:border-red-100 dark:hover:border-red-900/50 transition-all font-medium text-sm cursor-pointer"
             >
               ออกจากระบบ
             </button>
@@ -130,7 +130,7 @@ function AdminDashboardContent() {
         </header>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-10">
           {[
             { label: 'Total Reports', value: reports.length, color: 'text-blue-600 dark:text-blue-400', border: 'border-blue-100 dark:border-blue-900/50' },
             { label: 'Active Students', value: totalStudents, color: 'text-purple-600 dark:text-purple-400', border: 'border-purple-100 dark:border-purple-900/50' },
@@ -139,10 +139,10 @@ function AdminDashboardContent() {
           ].map((stat, idx) => (
             <div
               key={idx}
-              className={`p-6 rounded-2xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-md shadow-sm border ${stat.border} hover:shadow-md transition-all duration-300 transform hover:-translate-y-1`}
+              className={`p-4 md:p-6 rounded-2xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-md shadow-sm border ${stat.border} hover:shadow-md transition-all duration-300 transform hover:-translate-y-1`}
             >
               <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">{stat.label}</p>
-              <p className={`text-4xl font-extrabold ${stat.color}`}>{stat.value}</p>
+              <p className={`text-2xl md:text-4xl font-extrabold ${stat.color}`}>{stat.value}</p>
             </div>
           ))}
         </div>
@@ -175,7 +175,7 @@ function AdminDashboardContent() {
               <select
                 value={filterSeverity}
                 onChange={(e) => setFilterSeverity(e.target.value)}
-                className="px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-400 dark:focus:border-blue-500 outline-none"
+                className="px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-400 dark:focus:border-blue-500 outline-none cursor-pointer"
               >
                 <option value="ALL">ทั้งหมด</option>
                 <option value="NONE">NONE</option>
@@ -227,7 +227,7 @@ function AdminDashboardContent() {
                       <td className="px-6 py-4 text-right">
                         <button
                           onClick={() => setSelectedReport(report)}
-                          className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium text-sm"
+                          className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium text-sm cursor-pointer"
                         >
                           ดูรายละเอียด →
                         </button>
@@ -249,7 +249,7 @@ function AdminDashboardContent() {
               <h2 className="text-xl font-bold text-slate-800 dark:text-white">
                 รายงานของ {selectedReport.student_id}
               </h2>
-              <button onClick={() => setSelectedReport(null)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+              <button onClick={() => setSelectedReport(null)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 cursor-pointer">
                 <CloseIcon />
               </button>
             </div>
