@@ -242,7 +242,7 @@ export default function EditCharacterPage({ params }: { params: Promise<{ id: st
                                                 : "border-border bg-card hover:bg-secondary/50 hover:border-primary/30"
                                         )}
                                     >
-                                        <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", isSelected ? "bg-primary text-white" : "bg-secondary text-muted-foreground", preset.color)}>
+                                        <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", isSelected ? "bg-primary text-white" : `bg-secondary ${preset.color}`)}>
                                             <Icon className={cn("w-5 h-5", isSelected && "text-white")} />
                                         </div>
                                         <div className="flex-1">
