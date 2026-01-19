@@ -365,7 +365,7 @@ ${contextSection}
         if (report && report.should_notify_teacher) {
           // Send report to teacher via API
           try {
-            await fetch('/api/teacher/reports', {
+            await fetch('/api/reports', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(report),
