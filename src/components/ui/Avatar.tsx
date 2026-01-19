@@ -58,16 +58,15 @@ export const Avatar: React.FC<AvatarProps> = ({
   const srcIsEmoji = src && isEmoji(src);
 
   return (
-    <div className={cn("relative inline-block", className)}>
+    <div className={cn("relative inline-block rounded-full", className)}>
       <motion.div
         whileHover={{ scale: 1.05 }}
         className={cn(
             sizeStyles[size],
-            "rounded-full overflow-hidden flex items-center justify-center font-bold",
+            "rounded-full overflow-hidden flex items-center justify-center font-bold shadow-lg",
             srcIsEmoji 
               ? "bg-gradient-to-br from-primary/20 to-secondary text-foreground"
-              : "bg-gradient-to-br from-primary to-primary/60 text-primary-foreground",
-            "border-2 border-background shadow-lg"
+              : "bg-gradient-to-br from-primary to-primary/60 text-primary-foreground"
         )}
       >
         {src && !srcIsEmoji ? (

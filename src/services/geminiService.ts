@@ -347,7 +347,15 @@ export class GeminiService {
 
   // --- หยุดการสนทนา ---
   async stopLiveSession() {
-    this.currentSession = null;
+    // Close the session first before nullifying
+    if (this.currentSession) {
+      try {
+        await this.currentSession.close();
+      } catch (e) {
+        console.error("Error closing session:", e);
+      }
+      this.currentSession = null;
+    }
 
     if (this.mediaStream) {
       this.mediaStream.getTracks().forEach(track => track.stop());

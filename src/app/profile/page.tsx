@@ -120,12 +120,12 @@ function ProfileContent() {
 
   return (
     <AppLayout>
-      <div className="flex-1 bg-slate-50 dark:bg-[#0f0d1a] p-4 md:p-8 overflow-y-auto">
+      <div className="flex-1 bg-background p-4 md:p-8 overflow-y-auto">
         <div className="max-w-4xl mx-auto pb-20">
           
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">โปรไฟล์ของฉัน</h1>
-            <p className="text-slate-500 dark:text-slate-400">จัดการบัญชีและการตั้งค่าของคุณ</p>
+            <h1 className="text-3xl font-bold text-foreground mb-2">โปรไฟล์ของฉัน</h1>
+            <p className="text-muted-foreground">จัดการบัญชีและการตั้งค่าของคุณ</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -137,17 +137,17 @@ function ProfileContent() {
                    <Avatar 
                       name={user?.nickname || user?.first_name || 'User'} 
                       size="xl" 
-                      className="w-24 h-24 ring-4 ring-slate-100 dark:ring-slate-800"
+                      className="w-24 h-24 ring-2 ring-border"
                    />
-                   <div className="absolute bottom-0 right-0 p-1.5 bg-indigo-500 rounded-full text-white ring-2 ring-white dark:ring-slate-900 group-hover:bg-indigo-600 transition-colors">
+                   <div className="absolute bottom-0 right-0 p-1.5 bg-indigo-500 rounded-full text-white group-hover:bg-indigo-600 transition-colors">
                       <Camera className="w-4 h-4" />
                    </div>
                 </div>
                 
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                <h2 className="text-xl font-bold text-foreground">
                   {user?.first_name} {user?.last_name}
                 </h2>
-                <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">
+                <p className="text-muted-foreground text-sm mb-4">
                   รหัสนักเรียน: {user?.student_id}
                 </p>
                 
@@ -172,7 +172,7 @@ function ProfileContent() {
                   </Button>
                 </div>
 
-                <div className="w-full pt-6 mt-6 border-t border-slate-100 dark:border-slate-800">
+                <div className="w-full pt-6 mt-6 border-t border-border">
                   <Button 
                     variant="danger" 
                     className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10"
@@ -197,35 +197,35 @@ function ProfileContent() {
                     transition={{ duration: 0.2 }}
                   >
                     <Card className="p-6 md:p-8">
-                      <div className="flex items-center gap-3 mb-6 pb-6 border-b border-slate-100 dark:border-slate-800">
+                      <div className="flex items-center gap-3 mb-6 pb-6 border-b border-border">
                         <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-500">
                           <User className="w-6 h-6" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-bold text-slate-900 dark:text-white">ข้อมูลส่วนตัว</h3>
-                          <p className="text-sm text-slate-500 dark:text-slate-400">อัปเดตข้อมูลโปรไฟล์สาธารณะของคุณ</p>
+                          <h3 className="text-lg font-bold text-foreground">ข้อมูลส่วนตัว</h3>
+                          <p className="text-sm text-muted-foreground">อัปเดตข้อมูลโปรไฟล์สาธารณะของคุณ</p>
                         </div>
                       </div>
 
                       <div className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">ชื่อจริง</label>
-                            <Input value={user?.first_name || ''} disabled className="bg-slate-50 dark:bg-slate-900/50 opacity-75" />
+                            <label className="block text-sm font-medium text-foreground mb-1.5">ชื่อจริง</label>
+                            <Input value={user?.first_name || ''} disabled className="bg-muted opacity-75" />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">นามสกุล</label>
-                            <Input value={user?.last_name || ''} disabled className="bg-slate-50 dark:bg-slate-900/50 opacity-75" />
+                            <label className="block text-sm font-medium text-foreground mb-1.5">นามสกุล</label>
+                            <Input value={user?.last_name || ''} disabled className="bg-muted opacity-75" />
                           </div>
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">รหัสนักเรียน</label>
-                          <Input value={user?.student_id || ''} disabled className="bg-slate-50 dark:bg-slate-900/50 opacity-75 font-mono" />
+                          <label className="block text-sm font-medium text-foreground mb-1.5">รหัสนักเรียน</label>
+                          <Input value={user?.student_id || ''} disabled className="bg-muted opacity-75 font-mono" />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">ชื่อเล่น</label>
+                          <label className="block text-sm font-medium text-foreground mb-1.5">ชื่อเล่น</label>
                           <Input 
                             placeholder="คุณอยากให้เรียกว่าอะไร?" 
                             value={nickname} 
@@ -264,19 +264,19 @@ function ProfileContent() {
                     transition={{ duration: 0.2 }}
                   >
                     <Card className="p-6 md:p-8">
-                       <div className="flex items-center gap-3 mb-6 pb-6 border-b border-slate-100 dark:border-slate-800">
+                       <div className="flex items-center gap-3 mb-6 pb-6 border-b border-border">
                         <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-500">
                           <Lock className="w-6 h-6" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-bold text-slate-900 dark:text-white">ความปลอดภัย</h3>
-                          <p className="text-sm text-slate-500 dark:text-slate-400">จัดการรหัสผ่านและการตั้งค่าความปลอดภัย</p>
+                          <h3 className="text-lg font-bold text-foreground">ความปลอดภัย</h3>
+                          <p className="text-sm text-muted-foreground">จัดการรหัสผ่านและการตั้งค่าความปลอดภัย</p>
                         </div>
                       </div>
 
                       <div className="space-y-6 max-w-md">
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">รหัสผ่านปัจจุบัน</label>
+                          <label className="block text-sm font-medium text-foreground mb-1.5">รหัสผ่านปัจจุบัน</label>
                           <Input 
                             type="password" 
                             placeholder="กรอกรหัสผ่านปัจจุบัน"
@@ -286,7 +286,7 @@ function ProfileContent() {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">รหัสผ่านใหม่</label>
+                          <label className="block text-sm font-medium text-foreground mb-1.5">รหัสผ่านใหม่</label>
                           <Input 
                              type="password" 
                              placeholder="กรอกรหัสผ่านใหม่"
@@ -296,7 +296,7 @@ function ProfileContent() {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">ยืนยันรหัสผ่านใหม่</label>
+                          <label className="block text-sm font-medium text-foreground mb-1.5">ยืนยันรหัสผ่านใหม่</label>
                           <Input 
                              type="password" 
                              placeholder="กรอกรหัสผ่านใหม่อีกครั้ง"

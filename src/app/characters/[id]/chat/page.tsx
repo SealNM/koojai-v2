@@ -124,6 +124,16 @@ function CharacterChatPage({ params }: { params: Promise<{ id: string }> }) {
   const [currentStreamText, setCurrentStreamText] = useState('');
   const [currentStreamRole, setCurrentStreamRole] = useState<'user' | 'assistant'>('user');
   
+  // Voice chat end states
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [healingQuote, setHealingQuote] = useState<string | null>(null);
+  
+  // Risk tracking for text mode
+  const RISK_REPORT_THRESHOLD = 3; // Send update report every 3 risky messages
+  const CONTEXT_MESSAGE_LIMIT = 5; // Include last 5 messages in report context
+  const [riskCounter, setRiskCounter] = useState(0);
+  const [hasReportedInitialRisk, setHasReportedInitialRisk] = useState(false);
+  
   // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const geminiServiceRef = useRef<GeminiService | null>(null);
@@ -330,6 +340,9 @@ ${contextSection}
   };
 
   const endVoiceChat = async () => {
+    // Save any pending message first
+    savePendingVoiceMessage();
+    
     if (geminiServiceRef.current) {
       await geminiServiceRef.current.stopLiveSession();
       geminiServiceRef.current = null;
@@ -343,7 +356,103 @@ ${contextSection}
       streamTimeoutRef.current = null;
     }
     
-    savePendingVoiceMessage();
+    // Show analyzing state
+    setIsAnalyzing(true);
+    
+    // Analyze conversation and send to teacher if there's content
+    if (conversationLogRef.current.length > 0 && user?.student_id) {
+      try {
+        const conversationText = conversationLogRef.current.join('\n');
+        
+        // Create a temporary GeminiService instance for analysis
+        const analysisService = new GeminiService(() => {}, () => {});
+        const report = await analysisService.analyzeConversationSimple(
+          user.student_id,
+          conversationText
+        );
+        
+        if (report) {
+          // Show healing quote
+          if (report.healing_quote) {
+            setHealingQuote(report.healing_quote);
+          }
+          
+          // Send report to teacher if needed
+          if (report.should_notify_teacher) {
+            console.log('Voice chat - Sending report to teacher, should_notify:', report.should_notify_teacher);
+            try {
+              const response = await fetch('/api/reports', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(report),
+              });
+              
+              const result = await response.json();
+              console.log('Voice chat report sent - Response:', result, 'Status:', response.status);
+              
+              if (!response.ok) {
+                console.error('Failed to save voice chat report - Status:', response.status, 'Result:', result);
+              }
+            } catch (apiError) {
+              console.error('Failed to send report to teacher:', apiError);
+            }
+          } else {
+            console.log('Voice chat - Not sending report, should_notify_teacher is false');
+          }
+        }
+        
+        // Clear conversation log for next session
+        conversationLogRef.current = [];
+      } catch (error) {
+        console.error('Failed to analyze conversation:', error);
+      }
+    }
+    
+    setIsAnalyzing(false);
+  };
+
+  // =====================
+  // Risk Detection Helper
+  // =====================
+  const sendRiskReport = async (risk: { level: string; concern: string }, userMessage: string, aiResponse: string) => {
+    if (!user?.student_id || !currentChat) return;
+    
+    try {
+      // Build conversation context
+      const recentMessages = messages.slice(-CONTEXT_MESSAGE_LIMIT).map(m => 
+        `${m.role === 'user' ? 'นักเรียน' : character?.name || 'AI'}: ${m.content}`
+      ).join('\n');
+      
+      const fullContext = `${recentMessages}\nนักเรียน: ${userMessage}\n${character?.name || 'AI'}: ${aiResponse}`;
+      
+      // Create report matching TeacherReport interface
+      const report = {
+        student_id: user.student_id,
+        severity_level: risk.level,
+        problem_category: [risk.concern],
+        summary_for_teacher: `ตรวจพบความเสี่ยง: ${risk.concern}\n\nบริบทการสนทนา:\n${fullContext}`,
+        recommendation_for_teacher: `ควรติดตามนักเรียน ${user.first_name} ${user.last_name} เนื่องจาก ${risk.concern}`,
+        should_notify_teacher: true,
+        memory_for_next_session: `นักเรียนมีปัญหาเรื่อง: ${risk.concern}`,
+        healing_quote: 'อย่าลืมว่าทุกปัญหามีทางออก เราอยู่ตรงนี้เสมอเพื่อคุณ 💙',
+      };
+      
+      // Send to API
+      const response = await fetch('/api/reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(report),
+      });
+      
+      const result = await response.json();
+      console.log('Risk report sent to teacher - Response:', result, 'Status:', response.status);
+      
+      if (!response.ok) {
+        console.error('Failed to save report - Status:', response.status, 'Result:', result);
+      }
+    } catch (error) {
+      console.error('Failed to send risk report:', error);
+    }
   };
 
   // =====================
@@ -387,6 +496,8 @@ ${contextSection}
       if (response) {
         const risk = checkForRisk(response);
         const cleanedResponse = cleanResponse(response);
+        
+        console.log('AI Response received, Risk detected:', risk ? `YES - Level: ${risk.level}, Concern: ${risk.concern}` : 'NO');
 
         const aiMsg: LocalMessage = {
           id: uuidv4(),
@@ -399,9 +510,29 @@ ${contextSection}
         await saveLocalMessage(aiMsg);
         setMessages(prev => [...prev, aiMsg]);
 
+        // Handle risk detection with counter logic
         if (risk && (risk.level === 'HIGH' || risk.level === 'CRITICAL')) {
-           // We would call API here, omitted for brevity but logic is same as before
-           console.log("Risk detected:", risk);
+          const newCount = riskCounter + 1;
+          setRiskCounter(newCount);
+          
+          console.log(`Risk counter: ${newCount}, Has reported initial: ${hasReportedInitialRisk}, Threshold: ${RISK_REPORT_THRESHOLD}`);
+          
+          // Send report immediately on first risky message, or every RISK_REPORT_THRESHOLD risky messages
+          if (!hasReportedInitialRisk || newCount >= RISK_REPORT_THRESHOLD) {
+            console.log('Sending risk report to teacher...');
+            await sendRiskReport(risk, userMessage, cleanedResponse);
+            
+            if (!hasReportedInitialRisk) {
+              setHasReportedInitialRisk(true);
+            }
+            
+            if (newCount >= RISK_REPORT_THRESHOLD) {
+              setRiskCounter(0); // Reset counter after update report
+            }
+          }
+        } else {
+          // Reset counter if no risk detected
+          setRiskCounter(0);
         }
       }
     } catch (error) {
@@ -444,7 +575,7 @@ ${contextSection}
       <div className="flex h-[100dvh] bg-background text-foreground flex-col overflow-hidden">
         
         {/* Header */}
-        <header className="flex-none h-16 border-b bg-background/80 backdrop-blur-md sticky top-0 z-20 flex items-center justify-between px-4">
+        <header className="flex-none h-16 border-b bg-background/80 backdrop-blur-md flex items-center justify-between px-4 shrink-0 z-10">
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
@@ -459,7 +590,7 @@ ${contextSection}
                 src={character.avatar} 
                 name={character.name} 
                 className={cn(
-                    "ring-2 ring-offset-2 ring-primary/20",
+                    "ring-2 ring-primary/20",
                     mode === 'voice' && "ring-purple-500/50 animate-pulse"
                 )}
             />
@@ -593,7 +724,36 @@ ${contextSection}
             </div>
 
             <div className="flex-1 flex flex-col items-center justify-center p-6 z-10">
-               {!isConnected ? (
+               {isAnalyzing ? (
+                 <motion.div
+                   initial={{ opacity: 0 }}
+                   animate={{ opacity: 1 }}
+                   className="text-center space-y-6"
+                 >
+                   <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+                   <p className="text-lg font-medium text-foreground">กำลังวิเคราะห์การสนทนา...</p>
+                 </motion.div>
+               ) : healingQuote ? (
+                 <motion.div
+                   initial={{ opacity: 0, scale: 0.9 }}
+                   animate={{ opacity: 1, scale: 1 }}
+                   className="max-w-md space-y-6 text-center"
+                 >
+                   <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-lg">
+                     <span className="text-4xl">💚</span>
+                   </div>
+                   <h3 className="text-2xl font-bold text-foreground">ขอบคุณที่คุยกับเรา</h3>
+                   <Card className="p-6 bg-gradient-to-br from-primary/5 to-secondary/5">
+                     <p className="text-lg leading-relaxed text-foreground">{healingQuote}</p>
+                   </Card>
+                   <Button onClick={() => {
+                     setHealingQuote(null);
+                     setMode('text');
+                   }}>
+                     กลับไปหน้าแชท
+                   </Button>
+                 </motion.div>
+               ) : !isConnected ? (
                  <motion.div 
                    initial={{ opacity: 0, scale: 0.9 }}
                    animate={{ opacity: 1, scale: 1 }}
@@ -602,10 +762,10 @@ ${contextSection}
                     {/* Avatar with glow */}
                     <div className="relative inline-block">
                         <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-purple-600 rounded-full blur-2xl opacity-30 scale-110" />
-                        <div className="relative w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-br from-slate-100 to-white dark:from-slate-800 dark:to-slate-900 flex items-center justify-center text-6xl md:text-7xl border-4 border-white dark:border-slate-700 shadow-2xl">
+                        <div className="relative w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-br from-slate-100 to-white dark:from-slate-800 dark:to-slate-900 flex items-center justify-center text-6xl md:text-7xl shadow-2xl overflow-hidden">
                           {character.avatar || '✨'}
                         </div>
-                        <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-gradient-to-br from-green-400 to-green-500 rounded-full border-4 border-white dark:border-slate-800 flex items-center justify-center shadow-lg">
+                        <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center shadow-lg">
                           <div className="w-3 h-3 bg-white rounded-full" />
                         </div>
                     </div>
@@ -656,7 +816,7 @@ ${contextSection}
                        />
                        
                        {/* Main Avatar */}
-                       <div className="relative w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-br from-slate-100 to-white dark:from-slate-800 dark:to-slate-900 flex items-center justify-center text-6xl md:text-7xl border-4 border-white dark:border-slate-700 shadow-2xl z-10">
+                       <div className="relative w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-br from-slate-100 to-white dark:from-slate-800 dark:to-slate-900 flex items-center justify-center text-6xl md:text-7xl shadow-2xl z-10 overflow-hidden">
                          {character.avatar || '✨'}
                        </div>
                        
