@@ -124,6 +124,10 @@ function CharacterChatPage({ params }: { params: Promise<{ id: string }> }) {
   const [currentStreamText, setCurrentStreamText] = useState('');
   const [currentStreamRole, setCurrentStreamRole] = useState<'user' | 'assistant'>('user');
   
+  // Risk tracking for text mode
+  const [riskCounter, setRiskCounter] = useState(0);
+  const [hasReportedInitialRisk, setHasReportedInitialRisk] = useState(false);
+  
   // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const geminiServiceRef = useRef<GeminiService | null>(null);
@@ -382,6 +386,44 @@ ${contextSection}
   };
 
   // =====================
+  // Risk Detection Helper
+  // =====================
+  const sendRiskReport = async (risk: { level: string; concern: string }, userMessage: string, aiResponse: string) => {
+    if (!user?.student_id || !currentChat) return;
+    
+    try {
+      // Build conversation context
+      const recentMessages = messages.slice(-5).map(m => 
+        `${m.role === 'user' ? 'นักเรียน' : character?.name || 'AI'}: ${m.content}`
+      ).join('\n');
+      
+      const fullContext = `${recentMessages}\nนักเรียน: ${userMessage}\n${character?.name || 'AI'}: ${aiResponse}`;
+      
+      // Create report
+      const report = {
+        student_id: user.student_id,
+        severity_level: risk.level,
+        problem_category: [risk.concern],
+        summary_for_teacher: `ตรวจพบความเสี่ยง: ${risk.concern}`,
+        recommendation_for_teacher: `ควรติดตามนักเรียน ${user.first_name} ${user.last_name} เนื่องจาก ${risk.concern}`,
+        should_notify_teacher: true,
+        conversation_context: fullContext,
+      };
+      
+      // Send to API
+      await fetch('/api/reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(report),
+      });
+      
+      console.log('Risk report sent to teacher:', report);
+    } catch (error) {
+      console.error('Failed to send risk report:', error);
+    }
+  };
+
+  // =====================
   // Text Mode Logic
   // =====================
   const handleSendText = async () => {
@@ -434,9 +476,26 @@ ${contextSection}
         await saveLocalMessage(aiMsg);
         setMessages(prev => [...prev, aiMsg]);
 
+        // Handle risk detection with counter logic
         if (risk && (risk.level === 'HIGH' || risk.level === 'CRITICAL')) {
-           // We would call API here, omitted for brevity but logic is same as before
-           console.log("Risk detected:", risk);
+          const newCount = riskCounter + 1;
+          setRiskCounter(newCount);
+          
+          // Send report immediately on first risky message, or every 3rd risky message
+          if (!hasReportedInitialRisk || newCount >= 3) {
+            await sendRiskReport(risk, userMessage, cleanedResponse);
+            
+            if (!hasReportedInitialRisk) {
+              setHasReportedInitialRisk(true);
+            }
+            
+            if (newCount >= 3) {
+              setRiskCounter(0); // Reset counter after update report
+            }
+          }
+        } else {
+          // Reset counter if no risk detected
+          setRiskCounter(0);
         }
       }
     } catch (error) {
