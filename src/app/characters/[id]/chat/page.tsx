@@ -80,6 +80,9 @@ function ChatBubble({
 // Risk Detection Helpers
 // =====================
 
+// Default healing quote when analysis fails or is unavailable
+const DEFAULT_HEALING_QUOTE = 'ขอบคุณที่คุยกับเรานะ หวังว่าจะได้คุยกันอีก! 💙';
+
 // Risk keywords to detect risky messages from user input (pre-converted to lowercase)
 const CRITICAL_KEYWORDS = [
   'ฆ่าตัวตาย', 'อยากตาย', 'ไม่อยากมีชีวิต', 'อยากจบชีวิต', 'อยากหายไป',
@@ -434,9 +437,9 @@ ${contextSection}
         } else {
           // If analysis failed (e.g., due to rate limits), show a default healing quote
           console.log('Voice chat - Analysis returned null (possibly rate limited), showing default message');
-          setHealingQuote('ขอบคุณที่คุยกับเรานะ หวังว่าจะได้คุยกันอีก! 💙');
+          setHealingQuote(DEFAULT_HEALING_QUOTE);
           
-          // Still try to save a basic report to database
+          // Still try to save a basic report to database (user.student_id is already validated in the outer if condition)
           try {
             const basicReport = {
               student_id: user.student_id,
@@ -446,7 +449,7 @@ ${contextSection}
               recommendation_for_teacher: 'ติดตามนักเรียนตามปกติ',
               should_notify_teacher: false,
               memory_for_next_session: '',
-              healing_quote: 'ขอบคุณที่คุยกับเรานะ!'
+              healing_quote: DEFAULT_HEALING_QUOTE
             };
             
             const response = await fetch('/api/reports', {
@@ -467,7 +470,7 @@ ${contextSection}
       } catch (error) {
         console.error('Failed to analyze conversation:', error);
         // Show a default message on error
-        setHealingQuote('ขอบคุณที่คุยกับเรานะ หวังว่าจะได้คุยกันอีก! 💙');
+        setHealingQuote(DEFAULT_HEALING_QUOTE);
       }
     } else {
       // No conversation to analyze, just show a friendly message
