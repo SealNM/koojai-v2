@@ -125,6 +125,8 @@ function CharacterChatPage({ params }: { params: Promise<{ id: string }> }) {
   const [currentStreamRole, setCurrentStreamRole] = useState<'user' | 'assistant'>('user');
   
   // Risk tracking for text mode
+  const RISK_REPORT_THRESHOLD = 3; // Send update report every 3 risky messages
+  const CONTEXT_MESSAGE_LIMIT = 5; // Include last 5 messages in report context
   const [riskCounter, setRiskCounter] = useState(0);
   const [hasReportedInitialRisk, setHasReportedInitialRisk] = useState(false);
   
@@ -393,7 +395,7 @@ ${contextSection}
     
     try {
       // Build conversation context
-      const recentMessages = messages.slice(-5).map(m => 
+      const recentMessages = messages.slice(-CONTEXT_MESSAGE_LIMIT).map(m => 
         `${m.role === 'user' ? 'นักเรียน' : character?.name || 'AI'}: ${m.content}`
       ).join('\n');
       
@@ -481,15 +483,15 @@ ${contextSection}
           const newCount = riskCounter + 1;
           setRiskCounter(newCount);
           
-          // Send report immediately on first risky message, or every 3rd risky message
-          if (!hasReportedInitialRisk || newCount >= 3) {
+          // Send report immediately on first risky message, or every RISK_REPORT_THRESHOLD risky messages
+          if (!hasReportedInitialRisk || newCount >= RISK_REPORT_THRESHOLD) {
             await sendRiskReport(risk, userMessage, cleanedResponse);
             
             if (!hasReportedInitialRisk) {
               setHasReportedInitialRisk(true);
             }
             
-            if (newCount >= 3) {
+            if (newCount >= RISK_REPORT_THRESHOLD) {
               setRiskCounter(0); // Reset counter after update report
             }
           }
