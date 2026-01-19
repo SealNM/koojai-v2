@@ -379,17 +379,25 @@ ${contextSection}
           
           // Send report to teacher if needed
           if (report.should_notify_teacher) {
+            console.log('Voice chat - Sending report to teacher, should_notify:', report.should_notify_teacher);
             try {
-              await fetch('/api/reports', {
+              const response = await fetch('/api/reports', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(report),
               });
               
-              console.log('Report sent to teacher:', report);
+              const result = await response.json();
+              console.log('Voice chat report sent - Response:', result, 'Status:', response.status);
+              
+              if (!response.ok) {
+                console.error('Failed to save voice chat report - Status:', response.status, 'Result:', result);
+              }
             } catch (apiError) {
               console.error('Failed to send report to teacher:', apiError);
             }
+          } else {
+            console.log('Voice chat - Not sending report, should_notify_teacher is false');
           }
         }
         
@@ -430,13 +438,18 @@ ${contextSection}
       };
       
       // Send to API
-      await fetch('/api/reports', {
+      const response = await fetch('/api/reports', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(report),
       });
       
-      console.log('Risk report sent to teacher:', report);
+      const result = await response.json();
+      console.log('Risk report sent to teacher - Response:', result, 'Status:', response.status);
+      
+      if (!response.ok) {
+        console.error('Failed to save report - Status:', response.status, 'Result:', result);
+      }
     } catch (error) {
       console.error('Failed to send risk report:', error);
     }
@@ -483,6 +496,8 @@ ${contextSection}
       if (response) {
         const risk = checkForRisk(response);
         const cleanedResponse = cleanResponse(response);
+        
+        console.log('AI Response received, Risk detected:', risk ? `YES - Level: ${risk.level}, Concern: ${risk.concern}` : 'NO');
 
         const aiMsg: LocalMessage = {
           id: uuidv4(),
@@ -500,8 +515,11 @@ ${contextSection}
           const newCount = riskCounter + 1;
           setRiskCounter(newCount);
           
+          console.log(`Risk counter: ${newCount}, Has reported initial: ${hasReportedInitialRisk}, Threshold: ${RISK_REPORT_THRESHOLD}`);
+          
           // Send report immediately on first risky message, or every RISK_REPORT_THRESHOLD risky messages
           if (!hasReportedInitialRisk || newCount >= RISK_REPORT_THRESHOLD) {
+            console.log('Sending risk report to teacher...');
             await sendRiskReport(risk, userMessage, cleanedResponse);
             
             if (!hasReportedInitialRisk) {
@@ -554,10 +572,10 @@ ${contextSection}
 
   return (
     <ProtectedRoute>
-      <div className="flex h-screen max-h-screen bg-background text-foreground flex-col overflow-hidden fixed inset-0">
+      <div className="flex h-[100dvh] bg-background text-foreground flex-col overflow-hidden">
         
         {/* Header */}
-        <header className="flex-none h-16 border-b bg-background/80 backdrop-blur-md flex items-center justify-between px-4 shrink-0">
+        <header className="flex-none h-16 border-b bg-background/80 backdrop-blur-md flex items-center justify-between px-4 shrink-0 z-10">
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
