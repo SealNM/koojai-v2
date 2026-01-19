@@ -2,13 +2,14 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { createCharacter } from '@/services/characterService';
 import { AppLayout } from '@/components/layout';
 import { Button, Card, Input, Textarea, Avatar } from '@/components/ui';
 import { motion } from 'framer-motion';
-import { ChevronLeft, Sparkles, Heart, Star, Smile, Zap, User, Music, Check, ArrowRight } from 'lucide-react';
+import { ChevronLeft, Heart, Star, Smile, Zap, User, Music, Check, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Avatar Options
@@ -136,8 +137,14 @@ export default function CreateCharacterPage() {
                                     <div className={cn("w-32 h-32 rounded-full flex items-center justify-center text-6xl shadow-xl transition-colors", selectedAvatar.color)}>
                                         {selectedAvatar.icon}
                                     </div>
-                                    <div className="absolute -bottom-2 -right-2 bg-primary text-white p-2 rounded-full shadow-md">
-                                        <Sparkles className="w-5 h-5" />
+                                    <div className="absolute -bottom-2 -right-2 bg-primary text-white p-2 rounded-full shadow-md overflow-hidden">
+                                        <Image 
+                                            src="/images/brand/koojai-logo.png" 
+                                            alt="KooJai Logo" 
+                                            width={20} 
+                                            height={20}
+                                            className="w-5 h-5 object-contain"
+                                        />
                                     </div>
                                 </div>
                                 <h2 className="text-xl font-bold">เลือกหน้าตาเพื่อนรัก</h2>
@@ -259,7 +266,14 @@ export default function CreateCharacterPage() {
                             <div className="flex gap-3 pt-4">
                                 <Button variant="ghost" onClick={prevStep} className="flex-1">ย้อนกลับ</Button>
                                 <Button variant="primary" onClick={handleCreate} isLoading={isLoading} className="flex-1">
-                                    สร้างเลย! <Sparkles className="w-5 h-5 ml-2" />
+                                    สร้างเลย! 
+                                    <Image 
+                                        src="/images/brand/koojai-logo.png" 
+                                        alt="" 
+                                        width={20} 
+                                        height={20}
+                                        className="w-5 h-5 ml-2 object-contain"
+                                    />
                                 </Button>
                             </div>
                         </Card>

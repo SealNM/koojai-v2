@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { Button } from '@/components/ui/Button';
@@ -11,8 +12,7 @@ import {
   Frown, 
   CloudRain, 
   Zap, 
-  ArrowRight,
-  Sparkles
+  ArrowRight
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { MoodEntry } from '@/types';
@@ -139,7 +139,13 @@ function MoodSelector() {
             Hello, {user?.nickname || user?.first_name || 'Friend'} 👋
           </h1>
           <p className="text-slate-600 dark:text-slate-400 text-lg flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-amber-400" />
+            <Image 
+              src="/images/brand/koojai-logo.png" 
+              alt="KooJai" 
+              width={20} 
+              height={20}
+              className="w-5 h-5 object-contain"
+            />
             How are you feeling today?
           </p>
         </div>

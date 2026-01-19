@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { Character } from '@/types';
 import { fetchCharacters, deleteCharacter } from '@/services/characterService';
 import { AppLayout } from '@/components/layout';
 import { Button, Card, Badge, Avatar, ConfirmModal } from '@/components/ui';
-import { Plus, MessageCircle, Sparkles, User, Mic, MoreVertical, Trash2, Edit } from 'lucide-react';
+import { Plus, MessageCircle, User, Mic, MoreVertical, Trash2, Edit } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function HomePage() {
@@ -119,8 +120,14 @@ export default function HomePage() {
                          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-primary/30 transition-colors duration-500" />
                          
                          <div className="relative z-10 flex flex-col md:flex-row gap-6 items-start md:items-center h-full">
-                            <div className="w-24 h-24 bg-background/40 backdrop-blur-md rounded-[2rem] flex items-center justify-center shadow-lg border border-white/20 shrink-0">
-                                <Sparkles className="w-12 h-12 text-primary" />
+                            <div className="w-24 h-24 bg-background/40 backdrop-blur-md rounded-[2rem] flex items-center justify-center shadow-lg border border-white/20 shrink-0 overflow-hidden">
+                                <Image 
+                                    src="/images/brand/koojai-logo.png" 
+                                    alt="KooJai Logo" 
+                                    width={64} 
+                                    height={64}
+                                    className="w-16 h-16 object-contain"
+                                />
                             </div>
                             <div className="flex-1 space-y-3">
                                 <div className="flex items-center gap-3">
