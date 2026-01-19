@@ -96,6 +96,26 @@
     @apply bg-background text-foreground font-sans antialiased;
   }
   
+  /* Fix mobile viewport height issues with keyboard */
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+  }
+  
+  /* Allow scrolling within the app */
+  #__next {
+    height: 100%;
+    overflow: auto;
+  }
+  
+  /* Prevent iOS rubber-banding/bouncing on the body */
+  body {
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  
   /* Hide scrollbar for Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
       display: none;

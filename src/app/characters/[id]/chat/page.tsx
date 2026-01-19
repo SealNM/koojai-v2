@@ -79,6 +79,41 @@ function ChatBubble({
 // =====================
 // Risk Detection Helpers
 // =====================
+
+// Risk keywords to detect risky messages from user input
+const CRITICAL_KEYWORDS = [
+  'ฆ่าตัวตาย', 'อยากตาย', 'ไม่อยากมีชีวิต', 'อยากจบชีวิต', 'อยากหายไป',
+  'กรีดข้อมือ', 'ทำร้ายตัวเอง', 'กินยาเกินขนาด', 'แขวนคอ', 'กระโดดตึก',
+  'ถูกทำร้าย', 'ถูกล่วงละเมิด', 'ถูกข่มขืน', 'ถูกตบ', 'ถูกตี'
+];
+
+const HIGH_KEYWORDS = [
+  'เครียดมาก', 'ไม่ไหวแล้ว', 'หมดหวัง', 'ร้องไห้ทุกวัน', 'นอนไม่หลับ',
+  'เกลียดตัวเอง', 'ไม่มีค่า', 'ไร้ค่า', 'ไม่มีใครรัก', 'ไม่มีเพื่อน',
+  'ถูกกลั่นแกล้ง', 'โดนบูลลี่', 'เป็นโรคซึมเศร้า', 'panic', 'แพนิค',
+  'พ่อแม่ทะเลาะ', 'พ่อแม่หย่า', 'คนในบ้านทำร้าย', 'อยากหนีออกจากบ้าน'
+];
+
+function checkUserMessageForRisk(userMessage: string): { level: string; concern: string } | null {
+  const lowerMessage = userMessage.toLowerCase();
+  
+  // Check for critical keywords
+  for (const keyword of CRITICAL_KEYWORDS) {
+    if (lowerMessage.includes(keyword.toLowerCase())) {
+      return { level: 'CRITICAL', concern: `ตรวจพบคำเสี่ยงร้ายแรง: "${keyword}"` };
+    }
+  }
+  
+  // Check for high-risk keywords
+  for (const keyword of HIGH_KEYWORDS) {
+    if (lowerMessage.includes(keyword.toLowerCase())) {
+      return { level: 'HIGH', concern: `ตรวจพบคำที่ต้องติดตาม: "${keyword}"` };
+    }
+  }
+  
+  return null;
+}
+
 function checkForRisk(aiResponse: string): { level: string; concern: string } | null {
   const riskMatch = aiResponse.match(/\[RISK_FLAG:\s*\{([^}]+)\}\]/);
   if (riskMatch) {
@@ -377,27 +412,24 @@ ${contextSection}
             setHealingQuote(report.healing_quote);
           }
           
-          // Send report to teacher if needed
-          if (report.should_notify_teacher) {
-            console.log('Voice chat - Sending report to teacher, should_notify:', report.should_notify_teacher);
-            try {
-              const response = await fetch('/api/reports', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(report),
-              });
-              
-              const result = await response.json();
-              console.log('Voice chat report sent - Response:', result, 'Status:', response.status);
-              
-              if (!response.ok) {
-                console.error('Failed to save voice chat report - Status:', response.status, 'Result:', result);
-              }
-            } catch (apiError) {
-              console.error('Failed to send report to teacher:', apiError);
+          // Always send report to database when ending voice chat
+          // Voice mode requirement: Always send summary to teacher regardless of risk level
+          console.log('Voice chat - Always sending report to database, severity:', report.severity_level);
+          try {
+            const response = await fetch('/api/reports', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(report),
+            });
+            
+            const result = await response.json();
+            console.log('Voice chat report sent - Response:', result, 'Status:', response.status);
+            
+            if (!response.ok) {
+              console.error('Failed to save voice chat report - Status:', response.status, 'Result:', result);
             }
-          } else {
-            console.log('Voice chat - Not sending report, should_notify_teacher is false');
+          } catch (apiError) {
+            console.error('Failed to send report to teacher:', apiError);
           }
         }
         
@@ -482,6 +514,12 @@ ${contextSection}
       await saveLocalMessage(userMsg);
       setMessages(prev => [...prev, userMsg]);
 
+      // First check user message for risk keywords
+      const userMessageRisk = checkUserMessageForRisk(userMessage);
+      if (userMessageRisk) {
+        console.log('User message risk detected:', userMessageRisk.level, '-', userMessageRisk.concern);
+      }
+
       const history = messages.map(m => ({
         role: m.role === 'user' ? 'user' : 'model',
         parts: [{ text: m.content }]
@@ -494,10 +532,15 @@ ${contextSection}
       );
 
       if (response) {
-        const risk = checkForRisk(response);
+        const aiResponseRisk = checkForRisk(response);
         const cleanedResponse = cleanResponse(response);
         
-        console.log('AI Response received, Risk detected:', risk ? `YES - Level: ${risk.level}, Concern: ${risk.concern}` : 'NO');
+        // Use the higher-priority risk: user message risk OR AI response risk
+        const risk = userMessageRisk || aiResponseRisk;
+        
+        console.log('Risk detection - User message:', userMessageRisk ? `${userMessageRisk.level}` : 'NONE', 
+                    '| AI response:', aiResponseRisk ? `${aiResponseRisk.level}` : 'NONE',
+                    '| Final:', risk ? `${risk.level}` : 'NONE');
 
         const aiMsg: LocalMessage = {
           id: uuidv4(),
@@ -643,8 +686,8 @@ ${contextSection}
         {/* Text Mode */}
         {mode === 'text' && (
           <>
-            <main className="flex-1 overflow-y-auto p-4 scroll-smooth">
-               <div className="max-w-2xl mx-auto space-y-6">
+            <main className="flex-1 overflow-y-auto p-4 scroll-smooth min-h-0">
+               <div className="max-w-2xl mx-auto space-y-6 pb-4">
                 {messages.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-20 text-center">
                     <div className="w-24 h-24 mb-6 rounded-full bg-gradient-to-br from-primary/20 to-secondary flex items-center justify-center text-5xl shadow-lg">
@@ -686,7 +729,7 @@ ${contextSection}
               </div>
             </main>
 
-            <footer className="p-4 bg-background/80 backdrop-blur-md border-t flex-none">
+            <footer className="p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-background/95 backdrop-blur-md border-t flex-none sticky bottom-0 left-0 right-0">
               <div className="max-w-2xl mx-auto relative flex items-end gap-2">
                 <div className="flex-1 relative">
                   <textarea
@@ -696,7 +739,7 @@ ${contextSection}
                      onKeyDown={handleKeyPress}
                      placeholder="พิมพ์ข้อความ..."
                      rows={1}
-                     className="flex w-full rounded-2xl border border-slate-200 dark:border-input bg-white dark:bg-card px-4 py-3 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-50 resize-none overflow-hidden min-h-[50px] max-h-[150px] text-slate-800 dark:text-foreground"
+                     className="flex w-full rounded-2xl border border-slate-200 dark:border-input bg-white dark:bg-card px-4 py-3 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-50 resize-none overflow-hidden min-h-[50px] max-h-[120px] text-slate-800 dark:text-foreground"
                      disabled={isSending}
                   />
                 </div>
