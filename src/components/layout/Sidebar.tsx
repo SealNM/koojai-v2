@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
@@ -10,7 +11,6 @@ import {
   User, 
   X,
   Settings,
-  Sparkles,
   MessageCircle,
   LogOut
 } from 'lucide-react';
@@ -74,8 +74,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
         <div className="flex flex-col h-full bg-card border-r border-border backdrop-blur-xl transition-colors duration-300">
           {/* Branding */}
           <div className="flex-none p-6 pt-8 flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-tr from-primary to-blue-400 rounded-xl flex items-center justify-center shadow-lg">
-              <Sparkles className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 bg-gradient-to-tr from-primary to-blue-400 rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
+              <Image 
+                src="/images/brand/koojai-logo.png" 
+                alt="KooJai Logo" 
+                width={28} 
+                height={28}
+                className="w-7 h-7 object-contain"
+              />
             </div>
             <h1 className="text-xl font-bold tracking-tight text-foreground font-kanit">KooJai</h1>
             

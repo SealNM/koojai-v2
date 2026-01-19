@@ -96,21 +96,30 @@
     @apply bg-background text-foreground font-sans antialiased;
   }
   
-  /* Fix mobile viewport height issues with keyboard */
+  /* Fix mobile viewport height issues with keyboard and browser chrome */
   html {
     height: 100%;
+    height: -webkit-fill-available;
   }
   
   body {
     height: 100%;
+    min-height: 100dvh;
+    min-height: -webkit-fill-available;
     overflow: hidden;
     overscroll-behavior: none;
     -webkit-overflow-scrolling: touch;
+    /* Prevent browser from moving content when URL bar shows/hides */
+    position: fixed;
+    inset: 0;
+    width: 100%;
   }
   
   /* Allow scrolling for admin/teacher pages */
   body:has(.admin-page) {
     overflow: auto;
+    position: static;
+    min-height: auto;
   }
   
   /* Allow scrolling within the app */
@@ -127,5 +136,13 @@
   .no-scrollbar {
       -ms-overflow-style: none;
       scrollbar-width: none;
+  }
+
+  /* Mobile chat page fix - prevent content shift */
+  .chat-page-container {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
   }
 }

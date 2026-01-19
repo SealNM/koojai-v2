@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button, Input, ThemeToggle } from '@/components/ui';
-import { Mail, Lock, Eye, EyeOff, Sparkles } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function LoginPage() {
@@ -60,9 +61,15 @@ export default function LoginPage() {
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{ type: "spring", duration: 0.5 }}
-                        className="w-20 h-20 bg-gradient-to-tr from-primary to-blue-400 rounded-3xl mx-auto flex items-center justify-center shadow-lg mb-8"
+                        className="w-20 h-20 bg-gradient-to-tr from-primary to-blue-400 rounded-3xl mx-auto flex items-center justify-center shadow-lg mb-8 overflow-hidden"
                     >
-                        <Sparkles className="w-10 h-10 text-white" />
+                        <Image 
+                            src="/images/brand/koojai-logo.png" 
+                            alt="KooJai Logo" 
+                            width={48} 
+                            height={48}
+                            className="w-12 h-12 object-contain"
+                        />
                     </motion.div>
                     <h1 className="text-4xl font-bold tracking-tight text-foreground" style={{ fontFamily: 'var(--font-display, var(--font-sans))' }}>
                         ยินดีต้อนรับ

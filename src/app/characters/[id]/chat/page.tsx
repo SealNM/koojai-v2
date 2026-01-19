@@ -652,10 +652,10 @@ ${contextSection}
 
   return (
     <ProtectedRoute>
-      <div className="flex h-[100dvh] bg-background text-foreground flex-col overflow-hidden">
+      <div className="chat-page-container bg-background text-foreground">
         
         {/* Header */}
-        <header className="flex-none h-16 border-b bg-background/80 backdrop-blur-md flex items-center justify-between px-4 shrink-0 z-10">
+        <header className="flex-shrink-0 h-16 border-b bg-background/80 backdrop-blur-md flex items-center justify-between px-4 z-10">
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
@@ -766,7 +766,7 @@ ${contextSection}
               </div>
             </main>
 
-            <footer className="p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-background/95 backdrop-blur-md border-t flex-none sticky bottom-0 left-0 right-0">
+            <footer className="flex-shrink-0 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-background/95 backdrop-blur-md border-t">
               <div className="max-w-2xl mx-auto relative flex items-end gap-2">
                 <div className="flex-1 relative">
                   <textarea
@@ -953,7 +953,7 @@ ${contextSection}
                 <motion.div 
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  className="p-6 flex justify-center pb-10 bg-gradient-to-t from-slate-100 dark:from-[#0f0d1a] via-transparent to-transparent"
+                  className="flex-shrink-0 p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] flex justify-center bg-gradient-to-t from-slate-100 dark:from-[#0f0d1a] via-transparent to-transparent"
                 >
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                       <Button 

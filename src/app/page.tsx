@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { Character } from '@/types';
 import { fetchCharacters, deleteCharacter } from '@/services/characterService';
 import { AppLayout } from '@/components/layout';
-import { Button, Card, Badge, Avatar } from '@/components/ui';
-import { Plus, MessageCircle, Sparkles, User, Mic, MoreVertical, Trash2, Edit } from 'lucide-react';
+import { Button, Card, Badge, Avatar, ConfirmModal } from '@/components/ui';
+import { Plus, MessageCircle, User, Mic, MoreVertical, Trash2, Edit } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function HomePage() {
@@ -17,6 +18,11 @@ export default function HomePage() {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [loading, setLoading] = useState(true);
   const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
+  
+  // Delete modal state
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [characterToDelete, setCharacterToDelete] = useState<Character | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -32,15 +38,24 @@ export default function HomePage() {
     loadData();
   }, []);
 
-  const handleDeleteCharacter = async (e: React.MouseEvent, charId: string) => {
+  const openDeleteModal = (e: React.MouseEvent, char: Character) => {
     e.stopPropagation();
-    if (!confirm('ต้องการลบตัวละครนี้หรือไม่?')) return;
-    
-    const success = await deleteCharacter(charId);
-    if (success) {
-      setCharacters(prev => prev.filter(c => c.id !== charId));
-    }
+    setCharacterToDelete(char);
+    setDeleteModalOpen(true);
     setMenuOpenId(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!characterToDelete) return;
+    
+    setIsDeleting(true);
+    const success = await deleteCharacter(characterToDelete.id);
+    if (success) {
+      setCharacters(prev => prev.filter(c => c.id !== characterToDelete.id));
+    }
+    setIsDeleting(false);
+    setDeleteModalOpen(false);
+    setCharacterToDelete(null);
   };
 
   const toggleMenu = (e: React.MouseEvent, charId: string) => {
@@ -105,8 +120,14 @@ export default function HomePage() {
                          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-primary/30 transition-colors duration-500" />
                          
                          <div className="relative z-10 flex flex-col md:flex-row gap-6 items-start md:items-center h-full">
-                            <div className="w-24 h-24 bg-background/40 backdrop-blur-md rounded-[2rem] flex items-center justify-center shadow-lg border border-white/20 shrink-0">
-                                <Sparkles className="w-12 h-12 text-primary" />
+                            <div className="w-24 h-24 bg-background/40 backdrop-blur-md rounded-[2rem] flex items-center justify-center shadow-lg border border-white/20 shrink-0 overflow-hidden">
+                                <Image 
+                                    src="/images/brand/koojai-logo.png" 
+                                    alt="KooJai Logo" 
+                                    width={64} 
+                                    height={64}
+                                    className="w-16 h-16 object-contain"
+                                />
                             </div>
                             <div className="flex-1 space-y-3">
                                 <div className="flex items-center gap-3">
@@ -192,7 +213,7 @@ export default function HomePage() {
                                             แก้ไข
                                         </button>
                                         <button
-                                            onClick={(e) => handleDeleteCharacter(e, char.id)}
+                                            onClick={(e) => openDeleteModal(e, char)}
                                             className="w-full px-4 py-2 text-left text-sm hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 flex items-center gap-2 cursor-pointer"
                                         >
                                             <Trash2 className="w-4 h-4" />
@@ -224,6 +245,22 @@ export default function HomePage() {
             </motion.div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteModalOpen}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setCharacterToDelete(null);
+        }}
+        onConfirm={handleDeleteConfirm}
+        title="ลบตัวละคร"
+        description={`คุณต้องการลบ "${characterToDelete?.name}" หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้`}
+        confirmText="ลบ"
+        cancelText="ยกเลิก"
+        variant="danger"
+        isLoading={isDeleting}
+      />
     </AppLayout>
     </ProtectedRoute>
   );
