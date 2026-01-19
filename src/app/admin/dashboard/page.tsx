@@ -97,7 +97,7 @@ function AdminDashboardContent() {
       .pop() || '-';
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 relative overflow-auto">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 relative overflow-auto admin-page">
       {/* Background */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute top-[10%] right-[5%] w-96 h-96 bg-blue-200/40 dark:bg-blue-600/20 rounded-full blur-3xl"></div>

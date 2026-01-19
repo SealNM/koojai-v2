@@ -5,10 +5,10 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { Character } from '@/types';
-import { fetchCharacters } from '@/services/characterService';
+import { fetchCharacters, deleteCharacter } from '@/services/characterService';
 import { AppLayout } from '@/components/layout';
 import { Button, Card, Badge, Avatar } from '@/components/ui';
-import { Plus, MessageCircle, Sparkles, User, Mic } from 'lucide-react';
+import { Plus, MessageCircle, Sparkles, User, Mic, MoreVertical, Trash2, Edit } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function HomePage() {
@@ -16,6 +16,7 @@ export default function HomePage() {
   const { user } = useAuth();
   const [characters, setCharacters] = useState<Character[]>([]);
   const [loading, setLoading] = useState(true);
+  const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -30,6 +31,22 @@ export default function HomePage() {
     };
     loadData();
   }, []);
+
+  const handleDeleteCharacter = async (e: React.MouseEvent, charId: string) => {
+    e.stopPropagation();
+    if (!confirm('ต้องการลบตัวละครนี้หรือไม่?')) return;
+    
+    const success = await deleteCharacter(charId);
+    if (success) {
+      setCharacters(prev => prev.filter(c => c.id !== charId));
+    }
+    setMenuOpenId(null);
+  };
+
+  const toggleMenu = (e: React.MouseEvent, charId: string) => {
+    e.stopPropagation();
+    setMenuOpenId(menuOpenId === charId ? null : charId);
+  };
 
   const container = {
     hidden: { opacity: 0 },
@@ -150,7 +167,41 @@ export default function HomePage() {
                 {/* Character List */}
                 {characters.map((char) => (
                     <motion.div key={char.id} variants={item} className="md:col-span-1 lg:col-span-4">
-                        <Card className="h-full flex flex-col hover:border-primary/50 hover:shadow-xl transition-all cursor-pointer group bg-card hover:-translate-y-1 duration-300" onClick={() => router.push(`/characters/${char.id}/chat`)}>
+                        <Card className="h-full flex flex-col hover:border-primary/50 hover:shadow-xl transition-all cursor-pointer group bg-card hover:-translate-y-1 duration-300 relative" onClick={() => router.push(`/characters/${char.id}/chat`)}>
+                            {/* Menu Button */}
+                            <div className="absolute top-3 right-3 z-10">
+                                <button
+                                    onClick={(e) => toggleMenu(e, char.id)}
+                                    className="p-2 rounded-full hover:bg-secondary/80 transition-colors cursor-pointer"
+                                >
+                                    <MoreVertical className="w-5 h-5 text-muted-foreground" />
+                                </button>
+                                
+                                {/* Dropdown Menu */}
+                                {menuOpenId === char.id && (
+                                    <div className="absolute right-0 top-10 bg-card border border-border rounded-xl shadow-lg py-2 min-w-[140px] z-20">
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setMenuOpenId(null);
+                                                router.push(`/characters/${char.id}/edit`);
+                                            }}
+                                            className="w-full px-4 py-2 text-left text-sm hover:bg-secondary/50 flex items-center gap-2 cursor-pointer"
+                                        >
+                                            <Edit className="w-4 h-4" />
+                                            แก้ไข
+                                        </button>
+                                        <button
+                                            onClick={(e) => handleDeleteCharacter(e, char.id)}
+                                            className="w-full px-4 py-2 text-left text-sm hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 flex items-center gap-2 cursor-pointer"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                            ลบ
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                            
                             <div className="p-6 flex-1 flex flex-col items-center text-center gap-4">
                                 <div className="relative">
                                     <Avatar name={char.name} src={char.avatar} size="2xl" className="shadow-lg ring-2 ring-secondary group-hover:ring-primary/30 transition-all" />

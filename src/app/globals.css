@@ -108,6 +108,11 @@
     -webkit-overflow-scrolling: touch;
   }
   
+  /* Allow scrolling for admin/teacher pages */
+  body:has(.admin-page) {
+    overflow: auto;
+  }
+  
   /* Allow scrolling within the app */
   #__next {
     height: 100%;
