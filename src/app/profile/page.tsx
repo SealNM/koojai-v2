@@ -137,9 +137,9 @@ function ProfileContent() {
                    <Avatar 
                       name={user?.nickname || user?.first_name || 'User'} 
                       size="xl" 
-                      className="w-24 h-24 ring-4 ring-border"
+                      className="w-24 h-24 ring-2 ring-border"
                    />
-                   <div className="absolute bottom-0 right-0 p-1.5 bg-indigo-500 rounded-full text-white ring-2 ring-card group-hover:bg-indigo-600 transition-colors">
+                   <div className="absolute bottom-0 right-0 p-1.5 bg-indigo-500 rounded-full text-white group-hover:bg-indigo-600 transition-colors">
                       <Camera className="w-4 h-4" />
                    </div>
                 </div>

@@ -153,7 +153,7 @@ export default function HomePage() {
                         <Card className="h-full flex flex-col hover:border-primary/50 hover:shadow-xl transition-all cursor-pointer group bg-card hover:-translate-y-1 duration-300" onClick={() => router.push(`/characters/${char.id}/chat`)}>
                             <div className="p-6 flex-1 flex flex-col items-center text-center gap-4">
                                 <div className="relative">
-                                    <Avatar name={char.name} src={char.avatar} size="2xl" className="shadow-lg ring-4 ring-secondary group-hover:ring-primary/20 transition-all" />
+                                    <Avatar name={char.name} src={char.avatar} size="2xl" className="shadow-lg ring-2 ring-secondary group-hover:ring-primary/30 transition-all" />
                                     <div className="absolute bottom-0 right-0 w-5 h-5 bg-green-500 rounded-full border-2 border-card" />
                                 </div>
                                 <div>

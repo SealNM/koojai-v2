@@ -417,15 +417,16 @@ ${contextSection}
       
       const fullContext = `${recentMessages}\nนักเรียน: ${userMessage}\n${character?.name || 'AI'}: ${aiResponse}`;
       
-      // Create report
+      // Create report matching TeacherReport interface
       const report = {
         student_id: user.student_id,
         severity_level: risk.level,
         problem_category: [risk.concern],
-        summary_for_teacher: `ตรวจพบความเสี่ยง: ${risk.concern}`,
+        summary_for_teacher: `ตรวจพบความเสี่ยง: ${risk.concern}\n\nบริบทการสนทนา:\n${fullContext}`,
         recommendation_for_teacher: `ควรติดตามนักเรียน ${user.first_name} ${user.last_name} เนื่องจาก ${risk.concern}`,
         should_notify_teacher: true,
-        conversation_context: fullContext,
+        memory_for_next_session: `นักเรียนมีปัญหาเรื่อง: ${risk.concern}`,
+        healing_quote: 'อย่าลืมว่าทุกปัญหามีทางออก เราอยู่ตรงนี้เสมอเพื่อคุณ 💙',
       };
       
       // Send to API
@@ -571,7 +572,7 @@ ${contextSection}
                 src={character.avatar} 
                 name={character.name} 
                 className={cn(
-                    "ring-2 ring-offset-2 ring-primary/20",
+                    "ring-2 ring-primary/20",
                     mode === 'voice' && "ring-purple-500/50 animate-pulse"
                 )}
             />
