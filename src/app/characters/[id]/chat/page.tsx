@@ -330,6 +330,9 @@ ${contextSection}
   };
 
   const endVoiceChat = async () => {
+    // Save any pending message first
+    savePendingVoiceMessage();
+    
     if (geminiServiceRef.current) {
       await geminiServiceRef.current.stopLiveSession();
       geminiServiceRef.current = null;
@@ -343,7 +346,35 @@ ${contextSection}
       streamTimeoutRef.current = null;
     }
     
-    savePendingVoiceMessage();
+    // Analyze conversation and send to teacher if there's content
+    if (conversationLogRef.current.length > 0 && user?.student_id) {
+      try {
+        const conversationText = conversationLogRef.current.join('\n');
+        
+        // Create a temporary GeminiService instance for analysis
+        const analysisService = new GeminiService(() => {}, () => {});
+        const report = await analysisService.analyzeConversationSimple(
+          user.student_id,
+          conversationText
+        );
+        
+        if (report && report.should_notify_teacher) {
+          // Send report to teacher via API
+          await fetch('/api/teacher/reports', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(report),
+          });
+          
+          console.log('Report sent to teacher:', report);
+        }
+        
+        // Clear conversation log for next session
+        conversationLogRef.current = [];
+      } catch (error) {
+        console.error('Failed to analyze conversation:', error);
+      }
+    }
   };
 
   // =====================

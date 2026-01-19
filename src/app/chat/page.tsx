@@ -131,16 +131,16 @@ export default function ChatHistoryPage() {
   return (
     <ProtectedRoute allowedUserTypes={['student']}>
     <AppLayout>
-      <div className="flex-1 overflow-y-auto bg-slate-50 dark:bg-[#0f0d1a] p-4 md:p-8">
+      <div className="flex-1 overflow-y-auto bg-background p-4 md:p-8">
         <div className="max-w-4xl mx-auto space-y-6 pb-20">
           
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+              <h1 className="text-3xl font-bold text-foreground mb-2">
                 ประวัติการสนทนา
               </h1>
-              <p className="text-slate-500 dark:text-slate-400">
+              <p className="text-muted-foreground">
                 ดูประวัติการคุยที่ผ่านมา
               </p>
             </div>
@@ -153,7 +153,7 @@ export default function ChatHistoryPage() {
                     placeholder="ค้นหาข้อความ..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-9 pr-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full md:w-64 text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-500"
+                    className="pl-9 pr-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full md:w-64 text-foreground placeholder:text-slate-500 dark:placeholder:text-slate-500"
                   />
                </div>
             </div>
@@ -167,7 +167,7 @@ export default function ChatHistoryPage() {
           ) : filteredChats.length === 0 ? (
              <div className="text-center py-20 opacity-70">
                 <MessageCircle className="w-16 h-16 mx-auto text-slate-300 mb-4" />
-                <p className="text-lg font-medium text-slate-600 dark:text-slate-400">ไม่พบประวัติการสนทนา</p>
+                <p className="text-lg font-medium text-muted-foreground">ไม่พบประวัติการสนทนา</p>
                 <p className="text-slate-500 text-sm mb-6">ลองเริ่มคุยกับเพื่อนใหม่สิ!</p>
                 <Button 
                     variant="primary" 
@@ -213,7 +213,7 @@ export default function ChatHistoryPage() {
                               </span>
                            </div>
                            
-                           <p className="text-sm text-slate-500 dark:text-slate-400 truncate">
+                           <p className="text-sm text-muted-foreground truncate">
                              {chat.title || 'Start of conversation...'}
                            </p>
                         </div>

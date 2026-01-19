@@ -31,22 +31,28 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
         <button
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           className={cn(
-             "relative h-10 w-full rounded-xl bg-slate-200 dark:bg-slate-800 p-1 flex items-center cursor-pointer transition-colors border border-slate-300 dark:border-slate-700",
+             "relative h-10 w-full rounded-xl bg-secondary p-1 flex items-center cursor-pointer transition-colors border border-border",
              className
           )}
         >
            <motion.div 
-             className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white dark:bg-slate-600 rounded-lg shadow-sm"
+             className="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-card rounded-lg shadow-sm"
              animate={{ 
                  x: theme === 'dark' ? '100%' : '0%'
              }}
              transition={{ type: "spring", stiffness: 400, damping: 30 }}
            />
-           <div className="flex-1 flex items-center justify-center relative z-10 gap-2 text-xs font-medium text-slate-700 dark:text-slate-400">
+           <div className={cn(
+             "flex-1 flex items-center justify-center relative z-10 gap-2 text-xs font-medium transition-colors",
+             theme === 'light' ? "text-foreground" : "text-muted-foreground"
+           )}>
                <Sun className="w-4 h-4" />
                <span className="hidden sm:inline">Light</span>
            </div>
-           <div className="flex-1 flex items-center justify-center relative z-10 gap-2 text-xs font-medium text-slate-400 dark:text-slate-200">
+           <div className={cn(
+             "flex-1 flex items-center justify-center relative z-10 gap-2 text-xs font-medium transition-colors",
+             theme === 'dark' ? "text-foreground" : "text-muted-foreground"
+           )}>
                <Moon className="w-4 h-4" />
                <span className="hidden sm:inline">Dark</span>
            </div>

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button, Input, ThemeToggle } from '@/components/ui';
 import { Mail, Lock, Eye, EyeOff, Sparkles } from 'lucide-react';
@@ -115,6 +116,19 @@ export default function LoginPage() {
                         เข้าสู่ระบบ
                     </Button>
                 </form>
+
+                {/* Teacher Login Link */}
+                <div className="mt-6 pt-6 border-t border-border text-center">
+                  <p className="text-sm text-muted-foreground mb-2">
+                    เข้าสู่ระบบสำหรับคุณครู?
+                  </p>
+                  <Link
+                    href="/teacher/login"
+                    className="text-sm text-primary hover:text-primary/80 transition font-medium"
+                  >
+                    เข้าสู่ระบบคุณครู/ผู้ดูแล →
+                  </Link>
+                </div>
             </motion.div>
         </div>
     </div>
