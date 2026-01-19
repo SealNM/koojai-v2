@@ -97,23 +97,21 @@
   }
   
   /* Fix mobile viewport height issues with keyboard */
-  html, body {
+  html {
+    height: 100%;
+  }
+  
+  body {
     height: 100%;
     overflow: hidden;
-    position: fixed;
-    width: 100%;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
   }
   
   /* Allow scrolling within the app */
   #__next {
     height: 100%;
     overflow: auto;
-  }
-  
-  /* Prevent iOS rubber-banding/bouncing on the body */
-  body {
-    overscroll-behavior: none;
-    -webkit-overflow-scrolling: touch;
   }
   
   /* Hide scrollbar for Chrome, Safari and Opera */

@@ -80,33 +80,33 @@ function ChatBubble({
 // Risk Detection Helpers
 // =====================
 
-// Risk keywords to detect risky messages from user input
+// Risk keywords to detect risky messages from user input (pre-converted to lowercase)
 const CRITICAL_KEYWORDS = [
   'ฆ่าตัวตาย', 'อยากตาย', 'ไม่อยากมีชีวิต', 'อยากจบชีวิต', 'อยากหายไป',
   'กรีดข้อมือ', 'ทำร้ายตัวเอง', 'กินยาเกินขนาด', 'แขวนคอ', 'กระโดดตึก',
   'ถูกทำร้าย', 'ถูกล่วงละเมิด', 'ถูกข่มขืน', 'ถูกตบ', 'ถูกตี'
-];
+].map(k => k.toLowerCase());
 
 const HIGH_KEYWORDS = [
   'เครียดมาก', 'ไม่ไหวแล้ว', 'หมดหวัง', 'ร้องไห้ทุกวัน', 'นอนไม่หลับ',
   'เกลียดตัวเอง', 'ไม่มีค่า', 'ไร้ค่า', 'ไม่มีใครรัก', 'ไม่มีเพื่อน',
   'ถูกกลั่นแกล้ง', 'โดนบูลลี่', 'เป็นโรคซึมเศร้า', 'panic', 'แพนิค',
   'พ่อแม่ทะเลาะ', 'พ่อแม่หย่า', 'คนในบ้านทำร้าย', 'อยากหนีออกจากบ้าน'
-];
+].map(k => k.toLowerCase());
 
 function checkUserMessageForRisk(userMessage: string): { level: string; concern: string } | null {
   const lowerMessage = userMessage.toLowerCase();
   
   // Check for critical keywords
   for (const keyword of CRITICAL_KEYWORDS) {
-    if (lowerMessage.includes(keyword.toLowerCase())) {
+    if (lowerMessage.includes(keyword)) {
       return { level: 'CRITICAL', concern: `ตรวจพบคำเสี่ยงร้ายแรง: "${keyword}"` };
     }
   }
   
   // Check for high-risk keywords
   for (const keyword of HIGH_KEYWORDS) {
-    if (lowerMessage.includes(keyword.toLowerCase())) {
+    if (lowerMessage.includes(keyword)) {
       return { level: 'HIGH', concern: `ตรวจพบคำที่ต้องติดตาม: "${keyword}"` };
     }
   }
